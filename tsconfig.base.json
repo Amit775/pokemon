@@ -29,7 +29,8 @@
 			"@pokemon-center/prisma": ["./libs/prisma-client/src/index.ts"],
 			"@pokemon-center/prisma-champions": ["./libs/prisma-champions/src/index.ts"],
 			"@pokemon-center/ui-list": ["./libs/ui-list/src/index.ts"],
-			"@pokemon-center/ui-pokedex": ["./libs/ui-pokedex/src/index.ts"]
+			"@pokemon-center/ui-pokedex": ["./libs/ui-pokedex/src/index.ts"],
+			"@pokemon-center/ui-query-builder": ["./libs/ui-query-builder/src/index.ts"]
 		}
 	},
 	"exclude": ["node_modules", "tmp"]
