@@ -1,0 +1,2352 @@
+{
+	"pokemon_bool_exp": {
+		"name": "pokemon_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemon_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemon_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemon_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "base_experience",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "encounters",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "encounter_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "encounters_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "encounter_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "height",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "is_default",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Boolean_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "String_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "order",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon_species_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilities",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonability_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilities_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonability_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilitypasts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonabilitypast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilitypasts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonabilitypast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemoncries",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemoncries_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemoncries_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemoncries_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutions",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutions_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutionsbyevolvedformid",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutionsbyevolvedformid_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonforms",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonform_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonforms_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonform_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemongameindices",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemongameindex_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemongameindices_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemongameindex_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonitems",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonitem_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonitems_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonitem_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonmoves",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonmove_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonmoves_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonmove_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonspecy",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonspecies_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonsprites",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonsprites_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonsprites_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonsprites_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstatpasts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstatpast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstatpasts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstatpast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstats",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstat_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstats_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstat_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypepasts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontypepast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypepasts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontypepast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypes",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontype_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypes_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontype_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "weight",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"pokemonstat_bool_exp": {
+		"name": "pokemonstat_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemonstat_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstat_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemonstat_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "base_stat",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "effort",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemon_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "stat",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "stat_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "stat_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"pokemontype_bool_exp": {
+		"name": "pokemontype_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemontype_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontype_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemontype_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemon_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "slot",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "type",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "type_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "type_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"pokemonability_bool_exp": {
+		"name": "pokemonability_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemonability_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonability_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemonability_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "ability",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "ability_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "ability_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "is_hidden",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Boolean_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemon_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "slot",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"pokemonmove_bool_exp": {
+		"name": "pokemonmove_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemonmove_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonmove_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "pokemonmove_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "level",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "mastery",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "move_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_learn_method_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movelearnmethod",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movelearnmethod_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "order",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemon_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemon_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "version_group_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "versiongroup",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "versiongroup_bool_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"type_bool_exp": {
+		"name": "type_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "PokemonevolutionsByPartyTypeId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "PokemonevolutionsByPartyTypeId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "TypeefficaciesByTargetTypeId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacy_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "TypeefficaciesByTargetTypeId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacy_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "TypeefficacypastsByTargetTypeId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacypast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "TypeefficacypastsByTargetTypeId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacypast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "type_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "type_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "type_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "berries",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "berry_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "berries_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "berry_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "generation",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "generation_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "generation_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_damage_class_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movechanges",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movechange_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movechanges_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movechange_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movedamageclass",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclass_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moves",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "move_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moves_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "move_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "String_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutions",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutions_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonformtypes",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonformtype_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonformtypes_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonformtype_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypepasts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontypepast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypepasts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontypepast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypes",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontype_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemontypes_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemontype_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typeefficacies",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacy_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typeefficacies_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacy_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typeefficacypasts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacypast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typeefficacypasts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typeefficacypast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typegameindices",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typegameindex_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typegameindices_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typegameindex_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typenames",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typename_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "typenames_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "typename_aggregate_bool_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"ability_bool_exp": {
+		"name": "ability_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "ability_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "ability_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "ability_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "abilitychanges",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilitychange_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "abilitychanges_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilitychange_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "abilityeffecttexts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilityeffecttext_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "abilityeffecttexts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilityeffecttext_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "abilityflavortexts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilityflavortext_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "abilityflavortexts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilityflavortext_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "abilitynames",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilityname_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "abilitynames_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "abilityname_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "generation",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "generation_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "generation_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "is_main_series",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Boolean_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "String_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilities",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonability_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilities_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonability_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilitypasts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonabilitypast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonabilitypasts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonabilitypast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonformconditions",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonformcondition_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonformconditions_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonformcondition_aggregate_bool_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"move_bool_exp": {
+		"name": "move_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "ContestcombosBySecondMoveId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "contestcombo_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "ContestcombosBySecondMoveId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "contestcombo_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "SupercontestcombosBySecondMoveId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "supercontestcombo_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "SupercontestcombosBySecondMoveId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "supercontestcombo_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "move_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "move_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "move_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "accuracy",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contest_effect_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contest_type_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contestcombos",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "contestcombo_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contestcombos_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "contestcombo_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contesteffect",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "contesteffect_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contesttype",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "contesttype_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "generation",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "generation_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "generation_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "machines",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "machine_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "machines_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "machine_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_damage_class_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_effect_chance",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_effect_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_target_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moveattributemaps",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "moveattributemap_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moveattributemaps_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "moveattributemap_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movechanges",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movechange_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movechanges_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movechange_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movedamageclass",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclass_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moveeffect",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "moveeffect_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moveflavortexts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "moveflavortext_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moveflavortexts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "moveflavortext_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movemeta",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movemeta_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movemeta_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movemeta_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movemetastatchanges",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movemetastatchange_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movemetastatchanges_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movemetastatchange_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movemetum",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movemeta_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movenames",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movename_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movenames_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movename_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movetarget",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movetarget_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "String_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutionsByKnownMoveId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutionsByKnownMoveId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutionsByUsedMoveId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonevolutionsByUsedMoveId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonevolution_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonformconditions",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonformcondition_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonformconditions_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonformcondition_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonmoves",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonmove_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonmoves_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonmove_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "power",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pp",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "priority",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "super_contest_effect_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "supercontestcombos",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "supercontestcombo_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "supercontestcombos_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "supercontestcombo_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "supercontesteffect",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "supercontesteffect_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "type",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "type_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "type_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"stat_bool_exp": {
+		"name": "stat_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "NaturesByIncreasedStatId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "NaturesByIncreasedStatId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "stat_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "stat_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "stat_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "characteristics",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "characteristic_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "characteristics_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "characteristic_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "game_index",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "is_battle_only",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Boolean_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "move_damage_class_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movedamageclass",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclass_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movemetastatchanges",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movemetastatchange_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movemetastatchanges_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movemetastatchange_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "String_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "natures",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "natures_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstatpasts",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstatpast_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstatpasts_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstatpast_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstats",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstat_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "pokemonstats_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonstat_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "statnames",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "statname_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "statnames_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "statname_aggregate_bool_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"pokemonmove_aggregate_bool_exp": {
+		"name": "pokemonmove_aggregate_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "count",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "pokemonmove_aggregate_bool_exp_count",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"Int_comparison_exp": {
+		"name": "Int_comparison_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_eq",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Int",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_gt",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Int",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_gte",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Int",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_in",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "SCALAR",
+							"name": "Int"
+						}
+					}
+				}
+			},
+			{
+				"name": "_is_null",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_lt",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Int",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_lte",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Int",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_neq",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Int",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_nin",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "SCALAR",
+							"name": "Int"
+						}
+					}
+				}
+			}
+		]
+	},
+	"String_comparison_exp": {
+		"name": "String_comparison_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_eq",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_gt",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_gte",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_ilike",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_in",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "SCALAR",
+							"name": "String"
+						}
+					}
+				}
+			},
+			{
+				"name": "_iregex",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_is_null",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_like",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_lt",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_lte",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_neq",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_nilike",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_nin",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "SCALAR",
+							"name": "String"
+						}
+					}
+				}
+			},
+			{
+				"name": "_niregex",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_nlike",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_nregex",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_nsimilar",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_regex",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_similar",
+				"type": {
+					"kind": "SCALAR",
+					"name": "String",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"Boolean_comparison_exp": {
+		"name": "Boolean_comparison_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_eq",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_gt",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_gte",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_in",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "SCALAR",
+							"name": "Boolean"
+						}
+					}
+				}
+			},
+			{
+				"name": "_is_null",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_lt",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_lte",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_neq",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Boolean",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_nin",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "SCALAR",
+							"name": "Boolean"
+						}
+					}
+				}
+			}
+		]
+	}
+}
