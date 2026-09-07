@@ -31,6 +31,37 @@ describe('collectSubqueries', () => {
 		expect(collected[0].nodeIds).toEqual([first.nodeId, second.nodeId]);
 	});
 
+	it('deduplicates independent subqueries built with identical field values', () => {
+		const firstSubquery: ScalarSubquery = {
+			resourceName: 'pokemonstat',
+			filter: createFilterGroup({
+				children: [
+					createFilterRule({ fieldPath: ['pokemon', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'snorlax' } }),
+					createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' } }),
+				],
+			}),
+			selector: { kind: 'row', fieldPath: ['base_stat'], ordering: null },
+		};
+
+		const secondSubquery: ScalarSubquery = {
+			resourceName: 'pokemonstat',
+			filter: createFilterGroup({
+				children: [
+					createFilterRule({ fieldPath: ['pokemon', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'snorlax' } }),
+					createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' } }),
+				],
+			}),
+			selector: { kind: 'row', fieldPath: ['base_stat'], ordering: null },
+		};
+
+		const first = createFilterRule({ fieldPath: ['base_stat'], operatorName: '_gt', operand: { source: 'subquery', subquery: firstSubquery } });
+		const second = createFilterRule({ fieldPath: ['base_stat'], operatorName: '_lt', operand: { source: 'subquery', subquery: secondSubquery } });
+		const collected = collectSubqueries(createFilterGroup({ children: [first, second] }));
+
+		expect(collected).toHaveLength(1);
+		expect(collected[0].nodeIds).toEqual([first.nodeId, second.nodeId]);
+	});
+
 	it('descends into nested groups', () => {
 		const rule = createFilterRule({ fieldPath: ['base_stat'], operatorName: '_gt', operand: { source: 'subquery', subquery: snorlaxSpeed } });
 		const collected = collectSubqueries(createFilterGroup({ children: [createFilterGroup({ children: [rule] })] }));
