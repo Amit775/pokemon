@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, resource, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, resource, signal } from '@angular/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin } from '@angular/cdk/overlay';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
@@ -132,13 +132,23 @@ export class FieldPathPickerComponent {
 
 	protected readonly triggerLabel = computed(() => (this.path().length > 0 ? this.path().join('.') : 'Choose field'));
 
+	private readonly drillStepsResource = resource({
+		params: () => ({ rootTypeName: this.rootTypeName(), path: this.path() }),
+		loader: ({ params }) => this.resolveDrillSteps(params.rootTypeName, params.path),
+		defaultValue: [] as readonly DrillStep[],
+	});
+
+	private readonly synchronizeDrillSteps = effect(() => {
+		this.drillSteps.set(this.drillStepsResource.value());
+	});
+
 	private readonly fieldsResource = resource({
 		params: () => this.currentTypeName(),
 		loader: ({ params }) => this.catalog().readBooleanExpressionFields(params),
 		defaultValue: [] as readonly CatalogFieldDescriptor[],
 	});
 
-	protected readonly fields = computed(() => this.fieldsResource.value());
+	protected readonly fields = computed(() => this.fieldsResource.value().filter((field) => field.kind !== 'aggregatePredicate'));
 
 	protected selectField(field: CatalogFieldDescriptor): void {
 		if (field.kind === 'relation') {
@@ -151,6 +161,22 @@ export class FieldPathPickerComponent {
 			this.isOpen.set(false);
 			this.drillSteps.set([]);
 		}
+	}
+
+	private async resolveDrillSteps(rootTypeName: string, path: readonly string[]): Promise<readonly DrillStep[]> {
+		const leadingSegments = path.slice(0, -1);
+		const steps: DrillStep[] = [];
+		let currentTypeName = rootTypeName;
+		for (const segment of leadingSegments) {
+			const fields = await this.catalog().readBooleanExpressionFields(currentTypeName);
+			const relationField = fields.find(
+				(field): field is CatalogFieldDescriptor & { kind: 'relation' } => field.fieldName === segment && field.kind === 'relation',
+			);
+			if (!relationField) return [];
+			steps.push({ fieldName: relationField.fieldName, typeName: relationField.booleanExpressionTypeName });
+			currentTypeName = relationField.booleanExpressionTypeName;
+		}
+		return steps;
 	}
 
 	protected stepBackTo(index: number): void {

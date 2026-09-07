@@ -80,4 +80,49 @@ describe('FieldPathPickerComponent', () => {
 
 		expect(chosenPath).toEqual([scalarOption.textContent?.trim()]);
 	});
+
+	it('resumes a multi-segment path by opening at the level of its final segment', async () => {
+		spectator = createComponent({
+			props: { catalog, rootTypeName: 'pokemon_bool_exp', path: ['pokemontypes', 'type', 'name'] },
+		});
+		await spectator.fixture.whenStable();
+		openPanel();
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.queryAll('[data-testid="breadcrumb-step"]').map((step) => step.textContent?.trim())).toEqual([
+			'root',
+			'pokemontypes',
+			'type',
+		]);
+
+		const options = spectator.queryAll('[data-testid="field-option"]').map((option) => option.textContent?.trim());
+		expect(options).toContain('name');
+	});
+
+	it('falls back to the root when a saved path segment no longer resolves against the catalog', async () => {
+		spectator = createComponent({
+			props: { catalog, rootTypeName: 'pokemon_bool_exp', path: ['no_such_relation', 'name'] },
+		});
+		await spectator.fixture.whenStable();
+		openPanel();
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.queryAll('[data-testid="breadcrumb-step"]').map((step) => step.textContent?.trim())).toEqual(['root']);
+
+		const options = spectator.queryAll('[data-testid="field-option"]').map((option) => option.textContent?.trim());
+		expect(options).toContain('height');
+	});
+
+	it('excludes aggregate-predicate fields from the rendered field list', async () => {
+		spectator = createComponent({ props: { catalog, rootTypeName: 'pokemon_bool_exp' } });
+		await spectator.fixture.whenStable();
+		openPanel();
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const options = spectator.queryAll('[data-testid="field-option"]').map((option) => option.textContent?.trim());
+		expect(options).not.toContain('pokemonmoves_aggregate');
+	});
 });
