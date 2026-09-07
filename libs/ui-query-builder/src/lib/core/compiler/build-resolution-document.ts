@@ -1,4 +1,4 @@
-import { Kind, print, type ArgumentNode, type FieldNode, type SelectionSetNode, type ValueNode } from 'graphql';
+import { Kind, OperationTypeNode, print, type ArgumentNode, type FieldNode, type SelectionSetNode, type ValueNode } from 'graphql';
 import type { QueryBuilderDialect } from '../dialect/query-builder-dialect';
 import type { FieldOrdering } from '../model/query-tree';
 import { buildWhereValueNode } from './build-where';
@@ -62,7 +62,7 @@ export function buildResolutionDocument(collected: readonly CollectedSubquery[],
 		definitions: [
 			{
 				kind: Kind.OPERATION_DEFINITION,
-				operation: 'query' as const,
+				operation: OperationTypeNode.QUERY,
 				name: nameNode('ResolveOperands'),
 				selectionSet: {
 					kind: Kind.SELECTION_SET,

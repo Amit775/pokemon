@@ -1,4 +1,4 @@
-import { Kind, print, type ArgumentNode, type VariableDefinitionNode } from 'graphql';
+import { Kind, OperationTypeNode, print, type ArgumentNode, type VariableDefinitionNode } from 'graphql';
 import type { QueryBuilderDialect } from '../dialect/query-builder-dialect';
 import { coerceToGraphQLType, type LiteralValue } from '../model/literal-value';
 import { isFilterGroup, type FieldOrdering, type FilterGroup, type QueryBuilderNode } from '../model/query-tree';
@@ -115,7 +115,7 @@ export function compileQuery(request: CompileRequest, dialect: QueryBuilderDiale
 		definitions: [
 			{
 				kind: Kind.OPERATION_DEFINITION,
-				operation: 'query' as const,
+				operation: OperationTypeNode.QUERY,
 				name: nameNode('BuiltQuery'),
 				...(variableDefinitions.length > 0 ? { variableDefinitions } : {}),
 				selectionSet: {
