@@ -15,3 +15,6 @@ export * from './lib/core/compiler/compile-query';
 export * from './lib/overlay/query-builder-overlay';
 export * from './lib/session/http-introspection-fetcher';
 export * from './lib/session/query-builder.store';
+export * from './lib/components/field-path-picker/field-path-picker.component';
+export * from './lib/components/operand-editor/operand-editor.component';
+export * from './lib/components/filter-rule/filter-rule.component';
