@@ -1860,6 +1860,8 @@ git commit -m "test(query-builder): verify the compiled query against a live Has
 
 ### Task 11: Signal Forms recursion spike
 
+> **DECIDED 2026-09-07 — Outcome A: recursive schema works, bind the whole tree.** Mutually recursive `schema()` consts plus `applyEach` over `children` and `applyWhenValue` for the `group | rule` union bind an arbitrarily deep tree. A nested rule's field is readable and writable with write-through to the source signal, a `required` error two levels deep surfaces and aggregates to the root, and a branch grafted in after `form()` was created still picks up the schema. Type-checks under `strict` + `moduleResolution: bundler` with no casts, including against the real `readonly` `FilterGroup`. Tasks 12–15 bind through Signal Forms end to end; the fallback shape described under Task 12 does not apply. Full findings: `.superpowers/sdd/2026-09-06-graphql-query-builder/task-11-report.md`.
+
 **Files:**
 - Create: `libs/ui-query-builder/src/lib/session/signal-forms-recursion.spec.ts` (may be deleted at the end of the task)
 
