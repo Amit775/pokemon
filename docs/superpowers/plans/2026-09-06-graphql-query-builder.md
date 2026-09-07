@@ -2041,7 +2041,7 @@ git commit -m "feat(query-builder): add the session store and the display overla
 - Consumes: Task 6's `IntrospectionFetcher`, Task 12's `QUERY_BUILDER_ENDPOINT`
 - Produces: `createHttpIntrospectionFetcher()`, `ResourceDescriptor`, `readResources(queryRootFields, dialect)`, `discoverResources()`.
 
-This is the **bootstrap** step from the spec — the 147 KB one-time fetch that yields all 320 resources. Without it the builder has no resource list to start from.
+This is the **bootstrap** step from the spec — the 147 KB one-time fetch that yields all 160 resources. Without it the builder has no resource list to start from.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -2232,7 +2232,7 @@ Cache the resolved list in a module-scoped promise the same way the catalog cach
 
 - [ ] **Step 8: Verify the bootstrap against the live endpoint**
 
-Behind the same `QUERY_BUILDER_ENDPOINT` environment guard as Task 10, assert the discovery returns **320** resources and that the list contains `pokemon`, `pokemonstat`, `move` and `ability`. If the count differs, stop and report — that number came from measurement.
+Behind the same `QUERY_BUILDER_ENDPOINT` environment guard as Task 10, assert the discovery returns **160** resources and that the list contains `pokemon`, `pokemonstat`, `move` and `ability`. If the count differs, stop and report — that number came from measurement.
 
 - [ ] **Step 9: Run tests and commit**
 

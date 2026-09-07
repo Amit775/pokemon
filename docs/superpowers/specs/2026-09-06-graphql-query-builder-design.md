@@ -20,8 +20,9 @@ The target is a **Hasura-shaped** endpoint. During design this was validated aga
 |---|---|
 | Types in schema | 4301 |
 | Query root fields | 321 |
-| Fields accepting `where` (the resources) | 320 |
+| Fields accepting `where` | 320 |
 | `_aggregate` fields | 160 |
+| Leading resources (excluding `_aggregate`/`_by_pk`) | **160** |
 | Full introspection payload | **7.5 MB** |
 
 Resource naming is modern PokeAPI — `pokemon`, `pokemonstats`, `pokemontypes`, `pokemonabilities`, `pokemonmoves` — **not** the legacy `pokemon_v2_*` prefix that older PokeAPI GraphQL documentation shows.
@@ -191,7 +192,7 @@ Full introspection is 7.5 MB. Nobody pays that on app boot. Measured alternative
 
 The catalog is therefore built from targeted `__type` queries, cached per type name:
 
-1. **Bootstrap** once — yields all 320 resources and the name of each one's `where` input type.
+1. **Bootstrap** once — yields all 160 resources and the name of each one's `where` input type.
 2. **Drill** on demand — when the user selects `pokemon`, fetch `pokemon_bool_exp`. When they cross into `pokemonstats`, fetch `pokemonstat_bool_exp`. At most once per type per session.
 3. **Operators** on demand — one fetch per scalar comparison type, shared by every field of that type.
 
