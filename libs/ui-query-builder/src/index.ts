@@ -11,3 +11,5 @@ export * from './lib/core/compiler/collect-subqueries';
 export * from './lib/core/compiler/build-resolution-document';
 export * from './lib/core/compiler/build-selection';
 export * from './lib/core/compiler/compile-query';
+export * from './lib/overlay/query-builder-overlay';
+export * from './lib/session/query-builder.store';
