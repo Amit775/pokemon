@@ -48,4 +48,23 @@ describe('query builder catalog', () => {
 
 		await expect(catalog.readBooleanExpressionFields('nonexistent_bool_exp')).resolves.toEqual([]);
 	});
+
+	it('evicts a rejected fetch so a transient failure can be retried instead of poisoning the type forever', async () => {
+		const requestedTypeNames: string[] = [];
+		let callCount = 0;
+		const fetcher = async (typeName: string): Promise<IntrospectionInputObject | null> => {
+			requestedTypeNames.push(typeName);
+			callCount += 1;
+			if (callCount === 1) throw new Error('temporary outage');
+			return (fixture as Record<string, IntrospectionInputObject>)[typeName] ?? null;
+		};
+		const catalog = createQueryBuilderCatalog(fetcher, hasuraDialect);
+
+		await expect(catalog.readBooleanExpressionFields('pokemon_bool_exp')).rejects.toThrow('temporary outage');
+
+		const descriptors = await catalog.readBooleanExpressionFields('pokemon_bool_exp');
+
+		expect(descriptors.some((descriptor) => descriptor.fieldName === 'pokemonstats')).toBe(true);
+		expect(requestedTypeNames).toEqual(['pokemon_bool_exp', 'pokemon_bool_exp']);
+	});
 });

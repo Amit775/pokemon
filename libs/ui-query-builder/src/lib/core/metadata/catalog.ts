@@ -17,9 +17,15 @@ export function createQueryBuilderCatalog(fetcher: IntrospectionFetcher, dialect
 		const pending = pendingByTypeName.get(typeName);
 		if (pending) return pending;
 
-		const started = fetcher(typeName);
-		pendingByTypeName.set(typeName, started);
-		return started;
+		const requestedPromise: Promise<IntrospectionInputObject | null> = fetcher(typeName).catch((error) => {
+			if (pendingByTypeName.get(typeName) === requestedPromise) {
+				pendingByTypeName.delete(typeName);
+			}
+			throw error;
+		});
+
+		pendingByTypeName.set(typeName, requestedPromise);
+		return requestedPromise;
 	}
 
 	return {
