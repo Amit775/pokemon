@@ -43,6 +43,10 @@ function collectRuleIssues(group: FilterGroup): CompileIssue[] {
 		}
 		if (node.fieldPath.length === 0 || node.operatorName === '') {
 			issues.push({ nodeId: node.nodeId, reason: 'incompleteRule', message: 'This rule needs both a field and an operator.' });
+			return;
+		}
+		if (node.operand.source === 'literal' && (node.operand.value === null || (Array.isArray(node.operand.value) && node.operand.value.length === 0))) {
+			issues.push({ nodeId: node.nodeId, reason: 'incompleteRule', message: 'This rule needs a value to compare against.' });
 		}
 	}
 

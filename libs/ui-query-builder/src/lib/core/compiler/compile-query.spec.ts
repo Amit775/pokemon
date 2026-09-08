@@ -130,6 +130,20 @@ describe('compileQuery', () => {
 		expect(result.issues.some((issue) => issue.nodeId === brokenRule.nodeId && issue.reason === 'incompleteRule')).toBe(true);
 	});
 
+	it('reports incomplete, naming the nodeId, when a rule has a valid field and operator but a null literal operand', () => {
+		const nullLiteralRule = createFilterRule({ fieldPath: ['height'], operatorName: '_gt', operand: { source: 'literal', value: null } });
+		const request = {
+			...buildHeadlineRequest(),
+			filter: createFilterGroup({ children: [nullLiteralRule] }),
+			resolvedValues: new Map<string, number>(),
+		};
+		const result = compileQuery(request, hasuraDialect);
+
+		expect(result.status).toBe('incomplete');
+		if (result.status !== 'incomplete') return;
+		expect(result.issues.some((issue) => issue.nodeId === nullLiteralRule.nodeId && issue.reason === 'incompleteRule')).toBe(true);
+	});
+
 	it('reports incomplete when nothing is selected', () => {
 		const request = { ...buildHeadlineRequest(), selection: { fieldName: '', children: [] } };
 		const result = compileQuery(request, hasuraDialect);
