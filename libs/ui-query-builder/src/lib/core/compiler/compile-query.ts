@@ -69,14 +69,14 @@ export function compileQuery(request: CompileRequest, dialect: QueryBuilderDiale
 	const variableDefinitions: VariableDefinitionNode[] = [];
 
 	for (const entry of collected) {
-		if (!request.resolvedValues.has(entry.variableName)) {
+		const resolved = request.resolvedValues.get(entry.variableName) ?? null;
+		if (!request.resolvedValues.has(entry.variableName) || resolved === null) {
 			for (const nodeId of entry.nodeIds) {
 				issues.push({ nodeId, reason: 'unresolvedSubquery', message: 'This comparison value has not been resolved yet.' });
 			}
 			continue;
 		}
 
-		const resolved = request.resolvedValues.get(entry.variableName) as LiteralValue;
 		const variableTypeName = request.variableTypeNames.get(entry.variableName) ?? inferVariableTypeName(resolved);
 		const value = coerceToGraphQLType(resolved, variableTypeName);
 

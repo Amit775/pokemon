@@ -96,6 +96,26 @@ describe('compileQuery', () => {
 		expect(result.issues.some((issue) => issue.reason === 'unresolvedSubquery')).toBe(true);
 	});
 
+	it('reports incomplete, naming the nodeId, when a subquery resolves to null rather than a row', () => {
+		const speedRule = createFilterRule({ fieldPath: ['base_stat'], operatorName: '_gt', operand: { source: 'subquery', subquery: snorlaxSpeed } });
+		const request = {
+			resourceName: 'pokemon',
+			filter: createFilterGroup({ children: [speedRule] }),
+			selection: { fieldName: '', children: [{ fieldName: 'id', children: [] }] },
+			ordering: [],
+			limit: 20,
+			resolvedValues: new Map<string, number | null>([['pokemonstatBaseStat1', null]]),
+			variableTypeNames: new Map<string, string>([['pokemonstatBaseStat1', 'Int']]),
+		};
+		const result = compileQuery(request, hasuraDialect);
+
+		expect(result.status).toBe('incomplete');
+		if (result.status !== 'incomplete') return;
+		expect(result.issues).toContainEqual(
+			expect.objectContaining({ nodeId: speedRule.nodeId, reason: 'unresolvedSubquery' }),
+		);
+	});
+
 	it('reports incomplete for a rule with no operator, naming the offending node', () => {
 		const brokenRule = createFilterRule({ fieldPath: ['name'], operatorName: '', operand: { source: 'literal', value: 'x' } });
 		const request = {
