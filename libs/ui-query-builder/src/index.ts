@@ -18,3 +18,7 @@ export * from './lib/session/query-builder.store';
 export * from './lib/components/field-path-picker/field-path-picker.component';
 export * from './lib/components/operand-editor/operand-editor.component';
 export * from './lib/components/filter-rule/filter-rule.component';
+export * from './lib/components/filter-group/filter-group.component';
+export * from './lib/components/query-preview/query-preview.component';
+export * from './lib/components/selection-editor/selection-editor.component';
+export * from './lib/components/query-builder/query-builder.component';

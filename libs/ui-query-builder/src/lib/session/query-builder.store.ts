@@ -170,5 +170,11 @@ export const QueryBuilderStore = signalStore(
 			variableTypeNames.set(variableName, variableTypeName);
 			patchState(store, { resolvedValues, variableTypeNames });
 		},
+		setSelection(selection: SelectionNode): void {
+			patchState(store, { selection });
+		},
+		setLimit(limit: number): void {
+			patchState(store, { limit });
+		},
 	})),
 );
