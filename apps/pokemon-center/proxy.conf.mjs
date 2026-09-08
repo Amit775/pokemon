@@ -36,4 +36,10 @@ const to = (port, prefix) => ({
 export default {
 	'/api/pokedex': to(3000, '/api/pokedex'),
 	'/api/champions': to(3001, '/api/champions'),
+	'/api/query-builder': {
+		target: 'http://localhost:8080',
+		secure: false,
+		changeOrigin: true,
+		pathRewrite: { '^/api/query-builder/graphql': '/v1/graphql' },
+	},
 };

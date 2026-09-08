@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { provideDataGrid } from '@pokemon-center/ui-pokedex';
+import { QUERY_BUILDER_ENDPOINT } from '@pokemon-center/ui-query-builder';
 
 export const domainPokedexRoutes: Route[] = [
 	{ path: '', redirectTo: 'pokemon', pathMatch: 'full' },
@@ -57,5 +58,10 @@ export const domainPokedexRoutes: Route[] = [
 		path: 'kit',
 		providers: [provideDataGrid()],
 		loadComponent: () => import('./features/kit/kit.component').then((module) => module.KitComponent),
+	},
+	{
+		path: 'query-explorer',
+		providers: [provideDataGrid(), { provide: QUERY_BUILDER_ENDPOINT, useValue: '/api/query-builder/graphql' }],
+		loadComponent: () => import('./features/query-explorer/query-explorer.component').then((module) => module.QueryExplorerComponent),
 	},
 ];
