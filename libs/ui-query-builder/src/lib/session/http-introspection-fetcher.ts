@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import type { IntrospectionFetcher } from '../core/metadata/catalog';
 import type { IntrospectionInputObject } from '../core/metadata/introspection-types';
@@ -48,10 +48,14 @@ export function createHttpIntrospectionFetcher(): IntrospectionFetcher {
 	};
 }
 
-let cachedResourcesPromise: Promise<readonly ResourceDescriptor[]> | null = null;
+@Injectable({ providedIn: 'root' })
+class DiscoveredResourcesCache {
+	cachedResourcesPromise: Promise<readonly ResourceDescriptor[]> | null = null;
+}
 
 export function discoverResources(): Promise<readonly ResourceDescriptor[]> {
-	if (cachedResourcesPromise) return cachedResourcesPromise;
+	const cache = inject(DiscoveredResourcesCache);
+	if (cache.cachedResourcesPromise) return cache.cachedResourcesPromise;
 
 	const httpClient = inject(HttpClient);
 	const endpoint = inject(QUERY_BUILDER_ENDPOINT);
@@ -68,12 +72,12 @@ export function discoverResources(): Promise<readonly ResourceDescriptor[]> {
 			return readResources(queryRootFields, hasuraDialect);
 		})
 		.catch((error) => {
-			if (cachedResourcesPromise === requestedPromise) {
-				cachedResourcesPromise = null;
+			if (cache.cachedResourcesPromise === requestedPromise) {
+				cache.cachedResourcesPromise = null;
 			}
 			throw error;
 		});
 
-	cachedResourcesPromise = requestedPromise;
-	return cachedResourcesPromise;
+	cache.cachedResourcesPromise = requestedPromise;
+	return cache.cachedResourcesPromise;
 }
