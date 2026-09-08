@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { CatalogFieldDescriptor } from '../../core/metadata/introspection-types';
@@ -11,6 +11,7 @@ import {
 	type RelationQuantifier,
 	type RelationScope,
 } from '../../core/model/query-tree';
+import { QueryBuilderStore } from '../../session/query-builder.store';
 import { FilterRuleComponent } from '../filter-rule/filter-rule.component';
 
 export interface FilterGroupPatch {
@@ -171,6 +172,8 @@ export class FilterGroupComponent {
 	protected readonly isFilterGroup = isFilterGroup;
 	protected readonly isFilterRule = isFilterRule;
 
+	private readonly store = inject(QueryBuilderStore, { optional: true });
+
 	protected readonly childTypeName = signal('');
 	protected readonly comparisonTypeNames = signal<ReadonlyMap<string, string>>(new Map());
 
@@ -192,6 +195,10 @@ export class FilterGroupComponent {
 			ruleChildren.map(async (rule): Promise<readonly [string, string]> => [rule.nodeId, await resolveComparisonTypeName(catalog, childTypeName, rule.fieldPath)]),
 		);
 		this.comparisonTypeNames.set(new Map(entries));
+
+		for (const [ruleNodeId, comparisonTypeName] of entries) {
+			this.store?.setComparisonTypeName(ruleNodeId, comparisonTypeName);
+		}
 	}
 
 	protected setCombinator(combinator: CombinatorName): void {

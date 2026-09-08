@@ -35,6 +35,36 @@ async function drainCatalogIntrospectionRequests(spectator: Spectator<QueryExplo
 	}
 }
 
+const realisticIntrospectionFixtures: Record<string, unknown> = {
+	pokemon_bool_exp: {
+		name: 'pokemon_bool_exp',
+		kind: 'INPUT_OBJECT',
+		inputFields: [{ name: 'pokemonstats', type: { kind: 'INPUT_OBJECT', name: 'pokemonstat_bool_exp', ofType: null } }],
+	},
+	pokemonstat_bool_exp: {
+		name: 'pokemonstat_bool_exp',
+		kind: 'INPUT_OBJECT',
+		inputFields: [{ name: 'base_stat', type: { kind: 'INPUT_OBJECT', name: 'Int_comparison_exp', ofType: null } }],
+	},
+	Int_comparison_exp: {
+		name: 'Int_comparison_exp',
+		kind: 'INPUT_OBJECT',
+		inputFields: [{ name: '_gt', type: { kind: 'SCALAR', name: 'Int', ofType: null } }],
+	},
+};
+
+async function drainRealisticCatalogIntrospectionRequests(spectator: Spectator<QueryExplorerComponent>, httpMock: HttpTestingController): Promise<void> {
+	for (let iteration = 0; iteration < 12; iteration++) {
+		await flush(spectator);
+		const pending = httpMock.match((requested) => requested.url === endpointUrl && isIntrospectionRequest(requested.body));
+		for (const request of pending) {
+			const typeName = (request.request.body as { variables: { typeName: string } }).variables.typeName;
+			const introspected = realisticIntrospectionFixtures[typeName] ?? { name: typeName, kind: 'INPUT_OBJECT', inputFields: [] };
+			request.flush({ data: { __type: introspected } });
+		}
+	}
+}
+
 async function flush(spectator: Spectator<QueryExplorerComponent>): Promise<void> {
 	spectator.detectChanges();
 	await Promise.resolve();
@@ -192,4 +222,59 @@ describe('QueryExplorerComponent', () => {
 		expect(resolutionErrorElement).toExist();
 		expect(resolutionErrorElement?.textContent).toContain('not found');
 	});
+
+	it(
+		"coerces a resolved subquery value into the compared column's real scalar type, driven the way production drives " +
+			'it (through the catalog and the store), not by hand-supplying the type map',
+		async () => {
+			const store = getStore(spectator);
+			store.selectResource('pokemon');
+			store.setSelection({ fieldName: '', children: [{ fieldName: 'id', children: [] }] });
+
+			const rootNodeId = store.filter().nodeId;
+			store.addGroup(rootNodeId);
+			const statsGroupId = store.filter().children[store.filter().children.length - 1].nodeId;
+			store.setRelationScope(statsGroupId, { fieldPath: ['pokemonstats'], quantifier: 'some' });
+			store.addRule(statsGroupId);
+			const baseStatRuleId = (store.filter().children[store.filter().children.length - 1] as unknown as { children: { nodeId: string }[] })
+				.children[0].nodeId;
+
+			store.updateRule(baseStatRuleId, {
+				fieldPath: ['base_stat'],
+				operatorName: '_gt',
+				operand: {
+					source: 'subquery',
+					subquery: {
+						resourceName: 'pokemonstat',
+						filter: null,
+						selector: { kind: 'aggregate', functionName: 'avg', fieldPath: ['base_stat'] },
+					},
+				},
+			});
+
+			await drainRealisticCatalogIntrospectionRequests(spectator, httpMock);
+
+			expect(store.comparisonTypeNames().get(baseStatRuleId)).toBe('Int_comparison_exp');
+
+			const resolutionRequest = httpMock.expectOne((requested) => requested.url === endpointUrl && !isIntrospectionRequest(requested.body));
+			resolutionRequest.flush({ data: { pokemonstatAvgBaseStat1: { aggregate: { avg: { base_stat: 72.4 } } } } });
+			await settle(spectator);
+
+			expect(store.resolvedValues().get('pokemonstatAvgBaseStat1')).toBe(72.4);
+			expect(store.variableTypeNames().get('pokemonstatAvgBaseStat1')).toBe('Int');
+
+			const result = store.compileResult();
+			expect(result.status).toBe('complete');
+			if (result.status !== 'complete') return;
+			expect(result.variables).toEqual({ pokemonstatAvgBaseStat1: 72 });
+			expect(result.document.replace(/\s+/g, ' ')).toContain('query BuiltQuery($pokemonstatAvgBaseStat1: Int!)');
+
+			const dataRequest = httpMock.expectOne(
+				(requested) => requested.url === endpointUrl && !isIntrospectionRequest(requested.body) && requested.body.query === result.document,
+			);
+			expect(dataRequest.request.body.variables).toEqual({ pokemonstatAvgBaseStat1: 72 });
+			dataRequest.flush({ data: { pokemon: [] } });
+			await settle(spectator);
+		},
+	);
 });

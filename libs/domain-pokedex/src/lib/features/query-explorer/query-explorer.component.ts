@@ -12,6 +12,7 @@ import {
 	createQueryBuilderCatalog,
 	discoverResources,
 	hasuraDialect,
+	type QueryBuilderDialect,
 	type CollectedSubquery,
 	type CompiledQuery,
 	type LiteralValue,
@@ -69,6 +70,16 @@ function inferVariableTypeName(value: LiteralValue): string {
 	if (typeof value === 'boolean') return 'Boolean';
 	if (typeof value === 'number') return Number.isInteger(value) ? 'Int' : 'Float';
 	return 'String';
+}
+
+function resolveVariableTypeName(
+	entry: CollectedSubquery,
+	comparisonTypeNames: ReadonlyMap<string, string>,
+	dialect: QueryBuilderDialect,
+	value: LiteralValue,
+): string {
+	const comparisonTypeName = entry.nodeIds.map((nodeId) => comparisonTypeNames.get(nodeId)).find((typeName) => typeName);
+	return comparisonTypeName ? dialect.scalarTypeNameFromComparisonTypeName(comparisonTypeName) : inferVariableTypeName(value);
 }
 
 function collectColumnDefs(node: SelectionNode, path: readonly string[], columns: ColDef<QueryExplorerRow>[]): void {
@@ -246,9 +257,10 @@ export class QueryExplorerComponent {
 				throw new Error(response.errors.map((error) => error.message).join('; '));
 			}
 			const data = response.data ?? {};
+			const comparisonTypeNames = store.comparisonTypeNames();
 			for (const entry of unresolved) {
 				const value = extractResolvedValue(data, entry);
-				store.setResolvedValue(entry.variableName, value, inferVariableTypeName(value));
+				store.setResolvedValue(entry.variableName, value, resolveVariableTypeName(entry, comparisonTypeNames, hasuraDialect, value));
 			}
 			this.resolutionError.set(null);
 		} catch (error) {

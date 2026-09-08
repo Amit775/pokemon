@@ -7,6 +7,7 @@ export interface QueryBuilderDialect {
 	isComparisonTypeName(typeName: string): boolean;
 	isBooleanExpressionTypeName(typeName: string): boolean;
 	isAggregateBooleanExpressionTypeName(typeName: string): boolean;
+	scalarTypeNameFromComparisonTypeName(comparisonTypeName: string): string;
 	aggregateSiblingFieldName(fieldName: string): string;
 	aggregateFieldsTypeName(resourceName: string, functionName: AggregateFunctionName): string;
 }

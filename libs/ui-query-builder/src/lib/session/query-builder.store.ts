@@ -23,6 +23,7 @@ interface QueryBuilderState {
 	readonly limit: number;
 	readonly resolvedValues: ReadonlyMap<string, LiteralValue>;
 	readonly variableTypeNames: ReadonlyMap<string, string>;
+	readonly comparisonTypeNames: ReadonlyMap<string, string>;
 }
 
 function createInitialState(): QueryBuilderState {
@@ -34,6 +35,7 @@ function createInitialState(): QueryBuilderState {
 		limit: 50,
 		resolvedValues: new Map(),
 		variableTypeNames: new Map(),
+		comparisonTypeNames: new Map(),
 	};
 }
 
@@ -169,6 +171,11 @@ export const QueryBuilderStore = signalStore(
 			const variableTypeNames = new Map(store.variableTypeNames());
 			variableTypeNames.set(variableName, variableTypeName);
 			patchState(store, { resolvedValues, variableTypeNames });
+		},
+		setComparisonTypeName(ruleNodeId: string, comparisonTypeName: string): void {
+			const comparisonTypeNames = new Map(store.comparisonTypeNames());
+			comparisonTypeNames.set(ruleNodeId, comparisonTypeName);
+			patchState(store, { comparisonTypeNames });
 		},
 		setSelection(selection: SelectionNode): void {
 			patchState(store, { selection });

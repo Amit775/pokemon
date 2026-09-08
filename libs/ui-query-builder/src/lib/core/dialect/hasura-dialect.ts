@@ -18,6 +18,11 @@ export const hasuraDialect: QueryBuilderDialect = {
 	isAggregateBooleanExpressionTypeName(typeName) {
 		return typeName.endsWith(aggregateBooleanExpressionSuffix);
 	},
+	scalarTypeNameFromComparisonTypeName(comparisonTypeName) {
+		return comparisonTypeName.endsWith(comparisonTypeSuffix)
+			? comparisonTypeName.slice(0, -comparisonTypeSuffix.length)
+			: comparisonTypeName;
+	},
 	aggregateSiblingFieldName(fieldName) {
 		return `${fieldName}_aggregate`;
 	},
