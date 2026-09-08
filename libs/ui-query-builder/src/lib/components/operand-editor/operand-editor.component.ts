@@ -1,7 +1,25 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
-import type { LiteralValue } from '../../core/model/literal-value';
+import { coerceToGraphQLType, type LiteralScalar, type LiteralValue } from '../../core/model/literal-value';
 import type { FilterOperand } from '../../core/model/query-tree';
+
+function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScalar {
+	const trimmedValue = rawValue.trim();
+	if (trimmedValue === '') return null;
+
+	if (argumentTypeName === 'Boolean') {
+		if (trimmedValue.toLowerCase() === 'true') return true;
+		if (trimmedValue.toLowerCase() === 'false') return false;
+		return null;
+	}
+
+	if (argumentTypeName === 'Int' || argumentTypeName === 'Float') {
+		const parsedNumber = Number(trimmedValue);
+		return Number.isNaN(parsedNumber) ? null : parsedNumber;
+	}
+
+	return trimmedValue;
+}
 
 @Component({
 	selector: 'pokedex-operand-editor',
@@ -92,11 +110,14 @@ import type { FilterOperand } from '../../core/model/query-tree';
 export class OperandEditorComponent {
 	readonly operand = input.required<FilterOperand>();
 	readonly resolvedValue = input<LiteralValue | null>(null);
+	readonly argumentTypeName = input<string>('');
+	readonly acceptsList = input<boolean>(false);
 	readonly operandChange = output<FilterOperand>();
 
 	protected readonly literalDisplayValue = computed(() => {
 		const operand = this.operand();
-		return operand.source === 'literal' && operand.value !== null ? String(operand.value) : '';
+		if (operand.source !== 'literal' || operand.value === null) return '';
+		return Array.isArray(operand.value) ? operand.value.join(', ') : String(operand.value);
 	});
 
 	protected readonly subqueryResourceName = computed(() => {
@@ -129,7 +150,28 @@ export class OperandEditorComponent {
 		});
 	}
 
-	protected setLiteralValue(value: string): void {
+	protected setLiteralValue(rawValue: string): void {
+		const argumentTypeName = this.argumentTypeName();
+
+		if (this.acceptsList()) {
+			const segments = rawValue
+				.split(',')
+				.map((segment) => segment.trim())
+				.filter((segment) => segment.length > 0);
+			const parsedValues = segments.map((segment) => parseRawScalar(segment, argumentTypeName));
+
+			if (segments.length === 0 || parsedValues.some((parsedValue) => parsedValue === null)) {
+				this.operandChange.emit({ source: 'literal', value: null });
+				return;
+			}
+
+			const coercedValues = parsedValues.map((parsedValue) => coerceToGraphQLType(parsedValue, argumentTypeName) as LiteralScalar);
+			this.operandChange.emit({ source: 'literal', value: coercedValues });
+			return;
+		}
+
+		const parsedValue = parseRawScalar(rawValue, argumentTypeName);
+		const value = parsedValue === null ? null : coerceToGraphQLType(parsedValue, argumentTypeName);
 		this.operandChange.emit({ source: 'literal', value });
 	}
 

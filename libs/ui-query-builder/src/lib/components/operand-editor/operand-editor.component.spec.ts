@@ -47,6 +47,88 @@ describe('OperandEditorComponent', () => {
 		expect(latestOperand).toEqual({ source: 'literal', value: '25' });
 	});
 
+	it('emits a numeric literal when the argument type is Int', () => {
+		spectator = createComponent({ props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Int' } });
+
+		let latestOperand: FilterOperand | undefined;
+		spectator.output('operandChange').subscribe((operand) => (latestOperand = operand));
+
+		const literalInput = spectator.query<HTMLInputElement>('[data-testid="operand-literal-input"]');
+		if (!literalInput) throw new Error('expected the literal input');
+		spectator.typeInElement('10', literalInput);
+
+		expect(latestOperand).toEqual({ source: 'literal', value: 10 });
+	});
+
+	it('rounds a float typed into an Int argument', () => {
+		spectator = createComponent({ props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Int' } });
+
+		let latestOperand: FilterOperand | undefined;
+		spectator.output('operandChange').subscribe((operand) => (latestOperand = operand));
+
+		const literalInput = spectator.query<HTMLInputElement>('[data-testid="operand-literal-input"]');
+		if (!literalInput) throw new Error('expected the literal input');
+		spectator.typeInElement('72.6', literalInput);
+
+		expect(latestOperand).toEqual({ source: 'literal', value: 73 });
+	});
+
+	it('emits null instead of NaN when the numeric input is invalid', () => {
+		spectator = createComponent({ props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Int' } });
+
+		let latestOperand: FilterOperand | undefined;
+		spectator.output('operandChange').subscribe((operand) => (latestOperand = operand));
+
+		const literalInput = spectator.query<HTMLInputElement>('[data-testid="operand-literal-input"]');
+		if (!literalInput) throw new Error('expected the literal input');
+		spectator.typeInElement('not-a-number', literalInput);
+
+		expect(latestOperand).toEqual({ source: 'literal', value: null });
+	});
+
+	it('emits a boolean literal when the argument type is Boolean', () => {
+		spectator = createComponent({ props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Boolean' } });
+
+		let latestOperand: FilterOperand | undefined;
+		spectator.output('operandChange').subscribe((operand) => (latestOperand = operand));
+
+		const literalInput = spectator.query<HTMLInputElement>('[data-testid="operand-literal-input"]');
+		if (!literalInput) throw new Error('expected the literal input');
+		spectator.typeInElement('true', literalInput);
+
+		expect(latestOperand).toEqual({ source: 'literal', value: true });
+	});
+
+	it('parses a comma-separated list into a numeric array when the operator accepts a list', () => {
+		spectator = createComponent({
+			props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Int', acceptsList: true },
+		});
+
+		let latestOperand: FilterOperand | undefined;
+		spectator.output('operandChange').subscribe((operand) => (latestOperand = operand));
+
+		const literalInput = spectator.query<HTMLInputElement>('[data-testid="operand-literal-input"]');
+		if (!literalInput) throw new Error('expected the literal input');
+		spectator.typeInElement('1, 2, 3', literalInput);
+
+		expect(latestOperand).toEqual({ source: 'literal', value: [1, 2, 3] });
+	});
+
+	it('emits null for a list when any segment fails to parse', () => {
+		spectator = createComponent({
+			props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Int', acceptsList: true },
+		});
+
+		let latestOperand: FilterOperand | undefined;
+		spectator.output('operandChange').subscribe((operand) => (latestOperand = operand));
+
+		const literalInput = spectator.query<HTMLInputElement>('[data-testid="operand-literal-input"]');
+		if (!literalInput) throw new Error('expected the literal input');
+		spectator.typeInElement('1, x, 3', literalInput);
+
+		expect(latestOperand).toEqual({ source: 'literal', value: null });
+	});
+
 	it('displays the resolved value alongside the subquery description', () => {
 		const operand: FilterOperand = {
 			source: 'subquery',

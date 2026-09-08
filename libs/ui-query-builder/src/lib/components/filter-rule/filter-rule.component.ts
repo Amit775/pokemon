@@ -42,7 +42,12 @@ const filterRuleSchema: Schema<FilterRule> = schema<FilterRule>((rulePath) => {
 				<p class="rule-issue" data-testid="rule-issue" role="alert">{{ operatorIssues()[0].message }}</p>
 			}
 
-			<pokedex-operand-editor [operand]="ruleModel().operand" (operandChange)="setOperand($event)" />
+			<pokedex-operand-editor
+				[operand]="ruleModel().operand"
+				[argumentTypeName]="selectedOperatorDescriptor()?.argumentTypeName ?? ''"
+				[acceptsList]="selectedOperatorDescriptor()?.acceptsList ?? false"
+				(operandChange)="setOperand($event)"
+			/>
 		</div>
 	`,
 	styles: `
@@ -84,6 +89,10 @@ export class FilterRuleComponent {
 	protected readonly selectedOperatorValues = computed(() => {
 		const operatorName = this.ruleModel().operatorName;
 		return this.operators().some((operator) => operator.operatorName === operatorName) ? [operatorName] : [];
+	});
+	protected readonly selectedOperatorDescriptor = computed(() => {
+		const operatorName = this.ruleModel().operatorName;
+		return this.operators().find((operator) => operator.operatorName === operatorName) ?? null;
 	});
 
 	constructor() {
