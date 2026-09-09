@@ -4,6 +4,7 @@ export * from './lib/core/dialect/query-builder-dialect';
 export * from './lib/core/dialect/hasura-dialect';
 export * from './lib/core/metadata/introspection-types';
 export * from './lib/core/metadata/read-boolean-expression';
+export * from './lib/core/metadata/read-output-object';
 export * from './lib/core/metadata/read-operators';
 export * from './lib/core/metadata/read-resources';
 export * from './lib/core/metadata/catalog';

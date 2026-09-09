@@ -2,13 +2,14 @@ import { createComponentFactory, type Spectator } from '@ngneat/spectator/jest';
 import fixture from '../../core/metadata/__fixtures__/hasura-introspection.fixture.json';
 import { hasuraDialect } from '../../core/dialect/hasura-dialect';
 import { createQueryBuilderCatalog } from '../../core/metadata/catalog';
-import type { IntrospectionInputObject } from '../../core/metadata/introspection-types';
+import type { IntrospectionInputObject, IntrospectionOutputObject } from '../../core/metadata/introspection-types';
 import { createFilterRule } from '../../core/model/query-tree';
 import { FilterRuleComponent } from './filter-rule.component';
 
 const catalog = createQueryBuilderCatalog(
 	async (typeName) => (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null,
 	hasuraDialect,
+	async (typeName) => (fixture as unknown as Record<string, IntrospectionOutputObject>)[typeName] ?? null,
 );
 
 describe('FilterRuleComponent', () => {

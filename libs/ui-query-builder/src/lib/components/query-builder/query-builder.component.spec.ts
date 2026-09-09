@@ -3,14 +3,18 @@ import { parse, print } from 'graphql';
 import fixture from '../../core/metadata/__fixtures__/hasura-introspection.fixture.json';
 import { hasuraDialect } from '../../core/dialect/hasura-dialect';
 import { createQueryBuilderCatalog } from '../../core/metadata/catalog';
-import type { IntrospectionInputObject } from '../../core/metadata/introspection-types';
+import type { IntrospectionInputObject, IntrospectionOutputObject } from '../../core/metadata/introspection-types';
 import type { ResourceDescriptor } from '../../core/metadata/read-resources';
 import { createFilterGroup, createFilterRule, isFilterGroup, type FilterGroup } from '../../core/model/query-tree';
 import { QUERY_BUILDER_OVERLAY, type QueryBuilderOverlay } from '../../overlay/query-builder-overlay';
 import { QueryBuilderStore } from '../../session/query-builder.store';
 import { QueryBuilderComponent, type CompiledQuery } from './query-builder.component';
 
-const catalog = createQueryBuilderCatalog(async (typeName) => (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null, hasuraDialect);
+const catalog = createQueryBuilderCatalog(
+	async (typeName) => (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null,
+	hasuraDialect,
+	async (typeName) => (fixture as unknown as Record<string, IntrospectionOutputObject>)[typeName] ?? null,
+);
 const resources: readonly ResourceDescriptor[] = [{ resourceName: 'pokemon', booleanExpressionTypeName: 'pokemon_bool_exp' }];
 const overlay: QueryBuilderOverlay = { resources: { pokemon: { defaultSelectionFieldNames: ['id', 'name'] } }, fieldLabels: {} };
 

@@ -9,6 +9,7 @@ import {
 	buildResolutionDocument,
 	collectSubqueries,
 	createHttpIntrospectionFetcher,
+	createHttpOutputIntrospectionFetcher,
 	createQueryBuilderCatalog,
 	discoverResources,
 	hasuraDialect,
@@ -182,7 +183,11 @@ export class QueryExplorerComponent {
 	private readonly httpClient = inject(HttpClient);
 	private readonly endpoint = inject(QUERY_BUILDER_ENDPOINT);
 
-	protected readonly catalog: QueryBuilderCatalog = createQueryBuilderCatalog(createHttpIntrospectionFetcher(), hasuraDialect);
+	protected readonly catalog: QueryBuilderCatalog = createQueryBuilderCatalog(
+		createHttpIntrospectionFetcher(),
+		hasuraDialect,
+		createHttpOutputIntrospectionFetcher(),
+	);
 	protected readonly resources = signal<readonly ResourceDescriptor[]>([]);
 	protected readonly resourcesError = signal<string | null>(null);
 

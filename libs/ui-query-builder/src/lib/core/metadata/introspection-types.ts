@@ -35,3 +35,29 @@ export interface AggregatePredicateDescriptor {
 }
 
 export type CatalogFieldDescriptor = ScalarFieldDescriptor | RelationFieldDescriptor | AggregatePredicateDescriptor;
+
+export interface IntrospectionOutputField {
+	readonly name: string;
+	readonly type: IntrospectionTypeReference;
+}
+
+export interface IntrospectionOutputObject {
+	readonly name: string;
+	readonly kind: string;
+	readonly fields: readonly IntrospectionOutputField[];
+}
+
+export interface ScalarOutputFieldDescriptor {
+	readonly kind: 'scalar';
+	readonly fieldName: string;
+	readonly scalarTypeName: string;
+}
+
+export interface RelationOutputFieldDescriptor {
+	readonly kind: 'relation';
+	readonly fieldName: string;
+	readonly objectTypeName: string;
+	readonly isList: boolean;
+}
+
+export type OutputFieldDescriptor = ScalarOutputFieldDescriptor | RelationOutputFieldDescriptor;

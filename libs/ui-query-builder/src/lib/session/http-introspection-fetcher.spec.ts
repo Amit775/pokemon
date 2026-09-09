@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { QUERY_BUILDER_ENDPOINT } from '../overlay/query-builder-overlay';
-import { createHttpIntrospectionFetcher, discoverResources } from './http-introspection-fetcher';
+import { createHttpIntrospectionFetcher, createHttpOutputIntrospectionFetcher, discoverResources } from './http-introspection-fetcher';
 
 describe('http introspection fetcher', () => {
 	it('posts a __type query to the configured endpoint and unwraps the result', async () => {
@@ -31,6 +31,40 @@ describe('http introspection fetcher', () => {
 
 		const fetcher = TestBed.runInInjectionContext(() => createHttpIntrospectionFetcher());
 		const pending = fetcher('nope_bool_exp');
+
+		TestBed.inject(HttpTestingController).expectOne('/api/graphql').flush({ data: { __type: null } });
+
+		await expect(pending).resolves.toBeNull();
+	});
+});
+
+describe('http output introspection fetcher', () => {
+	it('posts a __type query to the configured endpoint and unwraps the result', async () => {
+		TestBed.configureTestingModule({
+			providers: [provideHttpClient(), provideHttpClientTesting(), { provide: QUERY_BUILDER_ENDPOINT, useValue: '/api/graphql' }],
+		});
+
+		const fetcher = TestBed.runInInjectionContext(() => createHttpOutputIntrospectionFetcher());
+		const pending = fetcher('pokemon');
+
+		const controller = TestBed.inject(HttpTestingController);
+		const request = controller.expectOne('/api/graphql');
+		expect(request.request.method).toBe('POST');
+		expect(request.request.body.variables).toEqual({ typeName: 'pokemon' });
+
+		request.flush({ data: { __type: { name: 'pokemon', kind: 'OBJECT', fields: [] } } });
+
+		await expect(pending).resolves.toMatchObject({ name: 'pokemon' });
+		controller.verify();
+	});
+
+	it('resolves null for a type the endpoint does not know', async () => {
+		TestBed.configureTestingModule({
+			providers: [provideHttpClient(), provideHttpClientTesting(), { provide: QUERY_BUILDER_ENDPOINT, useValue: '/api/graphql' }],
+		});
+
+		const fetcher = TestBed.runInInjectionContext(() => createHttpOutputIntrospectionFetcher());
+		const pending = fetcher('nonexistent');
 
 		TestBed.inject(HttpTestingController).expectOne('/api/graphql').flush({ data: { __type: null } });
 

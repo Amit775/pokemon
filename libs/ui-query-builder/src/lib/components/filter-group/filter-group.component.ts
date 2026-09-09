@@ -24,6 +24,7 @@ export interface FilterGroupPatch {
 const emptyQueryBuilderCatalog: QueryBuilderCatalog = {
 	readBooleanExpressionFields: async () => [],
 	readOperatorsForComparisonType: async () => [],
+	readOutputObjectFields: async () => [],
 };
 
 async function resolveRelationTypeName(catalog: QueryBuilderCatalog, startTypeName: string, fieldPath: readonly string[]): Promise<string> {
