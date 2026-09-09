@@ -5,7 +5,7 @@ import type { IntrospectionFetcher, OutputIntrospectionFetcher } from '../core/m
 import type { IntrospectionInputObject, IntrospectionOutputObject } from '../core/metadata/introspection-types';
 import { hasuraDialect } from '../core/dialect/hasura-dialect';
 import { readResources, type QueryRootField, type ResourceDescriptor } from '../core/metadata/read-resources';
-import { QUERY_BUILDER_ENDPOINT } from '../overlay/query-builder-overlay';
+import { QUERY_BUILDER_ENDPOINT } from '../metadata/query-builder-metadata';
 
 const introspectTypeQuery = `query IntrospectType($typeName: String!) {
 	__type(name: $typeName) {

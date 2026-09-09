@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { QUERY_BUILDER_ENDPOINT } from '../overlay/query-builder-overlay';
+import { QUERY_BUILDER_ENDPOINT } from '../metadata/query-builder-metadata';
 import { createHttpIntrospectionFetcher, createHttpOutputIntrospectionFetcher, discoverResources } from './http-introspection-fetcher';
 
 describe('http introspection fetcher', () => {

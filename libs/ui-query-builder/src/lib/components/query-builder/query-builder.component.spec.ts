@@ -6,7 +6,7 @@ import { createQueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { IntrospectionInputObject, IntrospectionOutputObject } from '../../core/metadata/introspection-types';
 import type { ResourceDescriptor } from '../../core/metadata/read-resources';
 import { createFilterGroup, createFilterRule, isFilterGroup, type FilterGroup } from '../../core/model/query-tree';
-import { QUERY_BUILDER_OVERLAY, type QueryBuilderOverlay } from '../../overlay/query-builder-overlay';
+import { QUERY_BUILDER_METADATA, type QueryBuilderMetadata } from '../../metadata/query-builder-metadata';
 import { QueryBuilderStore } from '../../session/query-builder.store';
 import { QueryBuilderComponent, type CompiledQuery } from './query-builder.component';
 
@@ -16,7 +16,11 @@ const catalog = createQueryBuilderCatalog(
 	async (typeName) => (fixture as unknown as Record<string, IntrospectionOutputObject>)[typeName] ?? null,
 );
 const resources: readonly ResourceDescriptor[] = [{ resourceName: 'pokemon', booleanExpressionTypeName: 'pokemon_bool_exp' }];
-const overlay: QueryBuilderOverlay = { resources: { pokemon: { defaultSelectionFieldNames: ['id', 'name'] } }, fieldLabels: {} };
+const metadata: QueryBuilderMetadata = {
+	resources: [{ resourceName: 'pokemon', displayName: 'Pokemon', group: 'Core', priority: 0, shortcuts: [], defaultSelectionFieldNames: ['id', 'name'] }],
+	resourceLabels: {},
+	fieldLabels: {},
+};
 
 function findGroup(node: FilterGroup, nodeId: string): FilterGroup {
 	if (node.nodeId === nodeId) return node;
@@ -39,7 +43,7 @@ describe('QueryBuilderComponent', () => {
 	let spectator: Spectator<QueryBuilderComponent>;
 	const createComponent = createComponentFactory({
 		component: QueryBuilderComponent,
-		providers: [{ provide: QUERY_BUILDER_OVERLAY, useValue: overlay }],
+		providers: [{ provide: QUERY_BUILDER_METADATA, useValue: metadata }],
 	});
 
 	it('resets the filter to an empty root group when a resource is chosen', () => {

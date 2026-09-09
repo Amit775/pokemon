@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, linkedSignal, output, signal, untracked } from '@angular/core';
 import type { SelectionNode } from '../../core/compiler/build-selection';
-import { QUERY_BUILDER_OVERLAY } from '../../overlay/query-builder-overlay';
+import { QUERY_BUILDER_METADATA } from '../../metadata/query-builder-metadata';
 
 @Component({
 	selector: 'pokedex-selection-editor',
@@ -64,7 +64,7 @@ export class SelectionEditorComponent {
 	readonly selection = input.required<SelectionNode>();
 	readonly selectionChanged = output<SelectionNode>();
 
-	private readonly overlay = inject(QUERY_BUILDER_OVERLAY);
+	private readonly metadata = inject(QUERY_BUILDER_METADATA);
 
 	protected readonly selectionModel = linkedSignal(() => this.selection());
 	protected readonly fieldDraft = signal('');
@@ -80,7 +80,8 @@ export class SelectionEditorComponent {
 			const currentSelection = untracked(this.selectionModel);
 			if (currentSelection.children.length > 0) return;
 
-			const defaultFieldNames = this.overlay.resources[resourceName]?.defaultSelectionFieldNames;
+			const resourceMetadata = this.metadata.resources.find((resource) => resource.resourceName === resourceName);
+			const defaultFieldNames = resourceMetadata?.defaultSelectionFieldNames;
 			if (!defaultFieldNames || defaultFieldNames.length === 0) return;
 
 			this.emitSelection({ fieldName: '', children: defaultFieldNames.map((fieldName) => ({ fieldName, children: [] })) });

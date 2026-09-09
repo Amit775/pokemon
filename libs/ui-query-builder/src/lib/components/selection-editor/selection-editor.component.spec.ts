@@ -1,10 +1,11 @@
 import { createComponentFactory, type Spectator } from '@ngneat/spectator/jest';
-import { QUERY_BUILDER_OVERLAY, type QueryBuilderOverlay } from '../../overlay/query-builder-overlay';
+import { QUERY_BUILDER_METADATA, type QueryBuilderMetadata } from '../../metadata/query-builder-metadata';
 import type { SelectionNode } from '../../core/compiler/build-selection';
 import { SelectionEditorComponent } from './selection-editor.component';
 
-const overlay: QueryBuilderOverlay = {
-	resources: { pokemon: { defaultSelectionFieldNames: ['id', 'name'] } },
+const metadata: QueryBuilderMetadata = {
+	resources: [{ resourceName: 'pokemon', displayName: 'Pokemon', group: 'Core', priority: 0, shortcuts: [], defaultSelectionFieldNames: ['id', 'name'] }],
+	resourceLabels: {},
 	fieldLabels: {},
 };
 
@@ -12,7 +13,7 @@ describe('SelectionEditorComponent', () => {
 	let spectator: Spectator<SelectionEditorComponent>;
 	const createComponent = createComponentFactory({
 		component: SelectionEditorComponent,
-		providers: [{ provide: QUERY_BUILDER_OVERLAY, useValue: overlay }],
+		providers: [{ provide: QUERY_BUILDER_METADATA, useValue: metadata }],
 	});
 
 	it('defaults the selection from the overlay for the chosen resource', () => {
