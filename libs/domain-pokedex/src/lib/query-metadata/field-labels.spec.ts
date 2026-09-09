@@ -1,4 +1,4 @@
-import { schemaNamesFixture } from '@pokemon-center/ui-query-builder';
+import { hasuraIntrospectionFixture, schemaNamesFixture } from '@pokemon-center/ui-query-builder';
 import { pokedexFieldLabels } from './field-labels';
 
 describe('pokedexFieldLabels', () => {
@@ -21,5 +21,36 @@ describe('pokedexFieldLabels', () => {
 			.map(([fieldName]) => fieldName);
 
 		expect(rawLooking).toEqual([]);
+	});
+
+	it('never labels two distinct fields on the same parent type the same way', () => {
+		const offenders: string[] = [];
+
+		for (const [parentTypeName, parentType] of Object.entries(hasuraIntrospectionFixture)) {
+			const fields = (parentType as { fields?: Array<{ name: string }> }).fields;
+
+			if (!fields) {
+				continue;
+			}
+
+			const labelToFieldName = new Map<string, string>();
+
+			for (const field of fields) {
+				if (field.name.endsWith('_aggregate')) {
+					continue;
+				}
+
+				const label = pokedexFieldLabels[field.name];
+				const previousFieldName = labelToFieldName.get(label);
+
+				if (previousFieldName && previousFieldName !== field.name) {
+					offenders.push(`${parentTypeName}.${previousFieldName}/${field.name} -> ${label}`);
+				}
+
+				labelToFieldName.set(label, field.name);
+			}
+		}
+
+		expect(offenders).toEqual([]);
 	});
 });
