@@ -7,7 +7,7 @@ import { createFilterRule } from '../../core/model/query-tree';
 import { FilterRuleComponent } from './filter-rule.component';
 
 const catalog = createQueryBuilderCatalog(
-	async (typeName) => (fixture as Record<string, IntrospectionInputObject>)[typeName] ?? null,
+	async (typeName) => (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null,
 	hasuraDialect,
 );
 

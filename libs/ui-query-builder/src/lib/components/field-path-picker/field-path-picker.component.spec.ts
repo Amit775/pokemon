@@ -6,7 +6,7 @@ import type { IntrospectionInputObject } from '../../core/metadata/introspection
 import { FieldPathPickerComponent } from './field-path-picker.component';
 
 const catalog = createQueryBuilderCatalog(
-	async (typeName) => (fixture as Record<string, IntrospectionInputObject>)[typeName] ?? null,
+	async (typeName) => (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null,
 	hasuraDialect,
 );
 

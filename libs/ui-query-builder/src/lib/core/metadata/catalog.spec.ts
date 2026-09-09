@@ -7,7 +7,7 @@ function createStubFetcher() {
 	const requestedTypeNames: string[] = [];
 	const fetcher = async (typeName: string): Promise<IntrospectionInputObject | null> => {
 		requestedTypeNames.push(typeName);
-		return (fixture as Record<string, IntrospectionInputObject>)[typeName] ?? null;
+		return (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null;
 	};
 	return { fetcher, requestedTypeNames };
 }
@@ -56,7 +56,7 @@ describe('query builder catalog', () => {
 			requestedTypeNames.push(typeName);
 			callCount += 1;
 			if (callCount === 1) throw new Error('temporary outage');
-			return (fixture as Record<string, IntrospectionInputObject>)[typeName] ?? null;
+			return (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null;
 		};
 		const catalog = createQueryBuilderCatalog(fetcher, hasuraDialect);
 

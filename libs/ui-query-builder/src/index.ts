@@ -22,3 +22,5 @@ export * from './lib/components/filter-group/filter-group.component';
 export * from './lib/components/query-preview/query-preview.component';
 export * from './lib/components/selection-editor/selection-editor.component';
 export * from './lib/components/query-builder/query-builder.component';
+export { default as hasuraIntrospectionFixture } from './lib/core/metadata/__fixtures__/hasura-introspection.fixture.json';
+export { default as schemaNamesFixture } from './lib/core/metadata/__fixtures__/schema-names.fixture.json';

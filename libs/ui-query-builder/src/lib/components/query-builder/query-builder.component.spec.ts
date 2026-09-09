@@ -10,7 +10,7 @@ import { QUERY_BUILDER_OVERLAY, type QueryBuilderOverlay } from '../../overlay/q
 import { QueryBuilderStore } from '../../session/query-builder.store';
 import { QueryBuilderComponent, type CompiledQuery } from './query-builder.component';
 
-const catalog = createQueryBuilderCatalog(async (typeName) => (fixture as Record<string, IntrospectionInputObject>)[typeName] ?? null, hasuraDialect);
+const catalog = createQueryBuilderCatalog(async (typeName) => (fixture as unknown as Record<string, IntrospectionInputObject>)[typeName] ?? null, hasuraDialect);
 const resources: readonly ResourceDescriptor[] = [{ resourceName: 'pokemon', booleanExpressionTypeName: 'pokemon_bool_exp' }];
 const overlay: QueryBuilderOverlay = { resources: { pokemon: { defaultSelectionFieldNames: ['id', 'name'] } }, fieldLabels: {} };
 
