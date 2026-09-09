@@ -70,6 +70,19 @@ describe('http output introspection fetcher', () => {
 
 		await expect(pending).resolves.toBeNull();
 	});
+
+	it('throws on a GraphQL errors response', async () => {
+		TestBed.configureTestingModule({
+			providers: [provideHttpClient(), provideHttpClientTesting(), { provide: QUERY_BUILDER_ENDPOINT, useValue: '/api/graphql' }],
+		});
+
+		const fetcher = TestBed.runInInjectionContext(() => createHttpOutputIntrospectionFetcher());
+		const pending = fetcher('pokemon');
+
+		TestBed.inject(HttpTestingController).expectOne('/api/graphql').flush({ errors: [{ message: 'something went wrong' }] });
+
+		await expect(pending).rejects.toThrow('something went wrong');
+	});
 });
 
 describe('discoverResources', () => {
