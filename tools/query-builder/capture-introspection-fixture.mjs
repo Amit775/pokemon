@@ -39,7 +39,7 @@ async function fetchType(typeName) {
 					name
 					kind
 					inputFields { name type { kind name ofType { kind name ofType { kind name } } } }
-					fields { name type { kind name ofType { kind name ofType { kind name } } } }
+					fields { name type { kind name ofType { kind name ofType { kind name ofType { kind name ofType { kind name } } } } } }
 				}
 			}`,
 			variables: { typeName },

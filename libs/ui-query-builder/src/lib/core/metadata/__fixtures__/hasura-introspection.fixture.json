@@ -2371,7 +2371,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "encounter",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2458,7 +2463,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonability",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2485,7 +2495,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonabilitypast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2512,7 +2527,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemoncries",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2539,7 +2559,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2566,7 +2591,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2593,7 +2623,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonform",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2620,7 +2655,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemongameindex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2647,7 +2687,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonitem",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2674,7 +2719,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonmove",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2709,7 +2759,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonsprites",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2736,7 +2791,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonstatpast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2763,7 +2823,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonstat",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2790,7 +2855,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemontypepast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -2817,7 +2887,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemontype",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3178,7 +3253,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3205,7 +3285,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typeefficacy",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3232,7 +3317,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typeefficacypast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3259,7 +3349,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "berry",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3322,7 +3417,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movechange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3357,7 +3457,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "move",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3396,7 +3501,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3423,7 +3533,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonformtype",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3450,7 +3565,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemontypepast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3477,7 +3597,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemontype",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3504,7 +3629,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typeefficacy",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3531,7 +3661,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typeefficacypast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3558,7 +3693,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typegameindex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3585,7 +3725,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typename",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3618,7 +3763,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "abilitychange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3645,7 +3795,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "abilityeffecttext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3672,7 +3827,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "abilityflavortext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3699,7 +3859,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "abilityname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3778,7 +3943,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonability",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3805,7 +3975,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonabilitypast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3832,7 +4007,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonformcondition",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3865,7 +4045,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "contestcombo",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3892,7 +4077,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "supercontestcombo",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -3943,7 +4133,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "contestcombo",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4014,7 +4209,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "machine",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4073,7 +4273,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "moveattributemap",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4100,7 +4305,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movechange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4143,7 +4353,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "moveflavortext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4170,7 +4385,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movemeta",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4197,7 +4417,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movemetastatchange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4232,7 +4457,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movename",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4279,7 +4509,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4306,7 +4541,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4333,7 +4573,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonformcondition",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4360,7 +4605,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonmove",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4419,7 +4669,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "supercontestcombo",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4476,7 +4731,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "nature",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4503,7 +4763,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "characteristic",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4582,7 +4847,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movemetastatchange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4621,7 +4891,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "nature",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4648,7 +4923,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonstatpast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4675,7 +4955,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonstat",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4702,7 +4987,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "statname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4735,7 +5025,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4762,7 +5057,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "berry",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4789,7 +5089,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "evolutionchain",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4852,7 +5157,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemattributemap",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4887,7 +5197,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemeffecttext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4914,7 +5229,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemflavortext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4949,7 +5269,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemgameindex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -4976,7 +5301,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5003,7 +5333,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemprice",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5030,7 +5365,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemsprites",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5057,7 +5397,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "machine",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5096,7 +5441,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5123,7 +5473,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonformcondition",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5150,7 +5505,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonitem",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5183,7 +5543,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5210,7 +5575,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5417,7 +5787,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "palpark",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5476,7 +5851,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemondexnumber",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5503,7 +5883,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonegggroup",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5530,7 +5915,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5565,7 +5955,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemon",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5600,7 +5995,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonspecies",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5627,7 +6027,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonspeciesdescription",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5654,7 +6059,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonspeciesflavortext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5681,7 +6091,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonspeciesname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5722,7 +6137,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "egggroupname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5773,7 +6193,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonegggroup",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5806,7 +6231,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "ability",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5833,7 +6263,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "generationname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5872,7 +6307,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemgameindex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5899,7 +6339,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "locationgameindex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5926,7 +6371,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "move",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5965,7 +6415,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonabilitypast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -5992,7 +6447,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonformgeneration",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6019,7 +6479,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonspecies",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6046,7 +6511,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonstatpast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6073,7 +6543,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemontypepast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6116,7 +6591,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typeefficacypast",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6143,7 +6623,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "typegameindex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6170,7 +6655,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "type",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6197,7 +6687,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "versiongroup",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6238,7 +6733,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "generation",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6277,7 +6777,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "location",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6316,7 +6821,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokedex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6343,7 +6853,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6370,7 +6885,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "regionname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6397,7 +6917,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "versiongroupregion",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6442,7 +6967,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "locationarea",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6469,7 +6999,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "locationgameindex",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6496,7 +7031,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "locationname",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6535,7 +7075,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6676,7 +7221,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "naturebattlestylepreference",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6703,7 +7253,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "naturename",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6730,7 +7285,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "naturepokeathlonstat",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -6787,7 +7347,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "berryflavormap",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7018,7 +7583,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "abilitychange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7045,7 +7615,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "abilityflavortext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7072,7 +7647,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "encounterslot",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7127,7 +7707,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemflavortext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7154,7 +7739,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "itemprice",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7181,7 +7771,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "machine",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7208,7 +7803,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movechange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7235,7 +7835,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "moveeffectchange",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7262,7 +7867,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "moveflavortext",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7309,7 +7919,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokedexversiongroup",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7336,7 +7951,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonevolution",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7363,7 +7983,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonform",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7390,7 +8015,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonmove",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7417,7 +8047,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "versiongroupmovelearnmethod",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7444,7 +8079,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "versiongroupregion",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7471,7 +8111,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "version",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7504,7 +8149,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "experience",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7543,7 +8193,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "growthratedescription",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7582,7 +8237,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "machine",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7621,7 +8281,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "pokemonspecies",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7654,7 +8319,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "characteristicdescription",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7735,7 +8405,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "encounterconditionvaluemap",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7868,7 +8543,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "berryflavor",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7895,7 +8575,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "contesttypename",
+								"ofType": null
+							}
 						}
 					}
 				}
@@ -7934,7 +8619,12 @@
 						"name": null,
 						"ofType": {
 							"kind": "NON_NULL",
-							"name": null
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "move",
+								"ofType": null
+							}
 						}
 					}
 				}
