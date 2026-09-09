@@ -133,7 +133,7 @@ export const pokedexResourceLabels: Readonly<Record<string, string>> = {
 	pokemonmove: 'Pokémon Move',
 	pokemonshape: 'Pokémon Shape',
 	pokemonshapename: 'Pokémon Shape Name',
-	pokemonspecies: 'Species',
+	pokemonspecies: 'Pokémon Species',
 	pokemonspeciesdescription: 'Pokémon Species Description',
 	pokemonspeciesflavortext: 'Pokémon Species Flavor Text',
 	pokemonspeciesname: 'Pokémon Species Name',
