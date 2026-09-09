@@ -14,6 +14,7 @@ export * from './lib/core/compiler/build-resolution-document';
 export * from './lib/core/compiler/build-selection';
 export * from './lib/core/compiler/compile-query';
 export * from './lib/metadata/query-builder-metadata';
+export * from './lib/metadata/expand-shortcut';
 export * from './lib/metadata/humanize-name';
 export * from './lib/metadata/resolve-labels';
 export * from './lib/session/http-introspection-fetcher';
