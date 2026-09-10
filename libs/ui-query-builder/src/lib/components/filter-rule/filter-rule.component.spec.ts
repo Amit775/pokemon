@@ -276,6 +276,79 @@ describe('FilterRuleComponent shortcut-first field picker', () => {
 		expect(latestRule.operatorName).toBe('_like');
 	});
 
+	it('reshapes a scalar operand into a single-element list when the operator switches from scalar to list', async () => {
+		spectator = createComponent({
+			props: {
+				...baseProps,
+				rule: createFilterRule({ fieldPath: ['name'], operatorName: '_eq', operand: { source: 'literal', value: 'grass' } }),
+				comparisonTypeName: 'String_comparison_exp',
+			},
+		});
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		let latestRule = spectator.component.rule();
+		spectator.output('ruleChange').subscribe((rule) => (latestRule = rule));
+
+		const isOneOfOption = spectator
+			.queryAll<HTMLElement>('[data-testid="operator-option"]')
+			.find((option) => option.textContent?.trim() === 'is one of');
+		if (!isOneOfOption) throw new Error('expected an _in operator option');
+		spectator.click(isOneOfOption);
+		spectator.detectChanges();
+
+		expect(latestRule.operatorName).toBe('_in');
+		expect(latestRule.operand).toEqual({ source: 'literal', value: ['grass'] });
+	});
+
+	it('collapses a list operand to its first value when the operator switches from list to scalar', async () => {
+		spectator = createComponent({
+			props: {
+				...baseProps,
+				rule: createFilterRule({ fieldPath: ['name'], operatorName: '_in', operand: { source: 'literal', value: ['grass', 'fire'] } }),
+				comparisonTypeName: 'String_comparison_exp',
+			},
+		});
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		let latestRule = spectator.component.rule();
+		spectator.output('ruleChange').subscribe((rule) => (latestRule = rule));
+
+		const isOption = spectator.queryAll<HTMLElement>('[data-testid="operator-option"]').find((option) => option.textContent?.trim() === 'is');
+		if (!isOption) throw new Error('expected an _eq operator option');
+		spectator.click(isOption);
+		spectator.detectChanges();
+
+		expect(latestRule.operatorName).toBe('_eq');
+		expect(latestRule.operand).toEqual({ source: 'literal', value: 'grass' });
+	});
+
+	it('leaves a null operand untouched when the operator switches between scalar and list', async () => {
+		spectator = createComponent({
+			props: {
+				...baseProps,
+				rule: createFilterRule({ fieldPath: ['name'], operatorName: '_eq', operand: { source: 'literal', value: null } }),
+				comparisonTypeName: 'String_comparison_exp',
+			},
+		});
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		let latestRule = spectator.component.rule();
+		spectator.output('ruleChange').subscribe((rule) => (latestRule = rule));
+
+		const isOneOfOption = spectator
+			.queryAll<HTMLElement>('[data-testid="operator-option"]')
+			.find((option) => option.textContent?.trim() === 'is one of');
+		if (!isOneOfOption) throw new Error('expected an _in operator option');
+		spectator.click(isOneOfOption);
+		spectator.detectChanges();
+
+		expect(latestRule.operatorName).toBe('_in');
+		expect(latestRule.operand).toEqual({ source: 'literal', value: null });
+	});
+
 	it('passes its catalog down to the operand editor so the subquery field picker resolves output fields for the chosen resource', async () => {
 		spectator = createComponent({
 			props: {
