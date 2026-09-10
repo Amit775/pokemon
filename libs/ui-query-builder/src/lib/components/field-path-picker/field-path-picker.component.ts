@@ -1,12 +1,20 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, resource, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, resource, signal } from '@angular/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin } from '@angular/cdk/overlay';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { CatalogFieldDescriptor } from '../../core/metadata/introspection-types';
+import { QUERY_BUILDER_METADATA } from '../../metadata/query-builder-metadata';
+import { resolveFieldLabel } from '../../metadata/resolve-labels';
 
 interface DrillStep {
 	readonly fieldName: string;
 	readonly typeName: string;
+}
+
+const boolExpSuffixPattern = /_bool_exp$/;
+
+function resourceNameFromTypeName(typeName: string): string {
+	return typeName.replace(boolExpSuffixPattern, '');
 }
 
 @Component({
@@ -20,10 +28,10 @@ interface DrillStep {
 				class="trigger"
 				cdkOverlayOrigin
 				#origin="cdkOverlayOrigin"
-				data-testid="field-path-trigger"
+				[attr.data-testid]="triggerTestId()"
 				(click)="isOpen.set(!isOpen())"
 			>
-				{{ triggerLabel() }}
+				{{ displayLabel() }}
 			</button>
 
 			<ng-template
@@ -41,15 +49,32 @@ interface DrillStep {
 						@for (step of drillSteps(); track step.fieldName; let index = $index) {
 							<span class="breadcrumb-separator">/</span>
 							<button type="button" class="breadcrumb-step" data-testid="breadcrumb-step" (click)="stepBackTo(index + 1)">
-								{{ step.fieldName }}
+								{{ breadcrumbLabel(step, index) }}
 							</button>
 						}
 					</div>
+
+					<input
+						type="text"
+						class="search-input"
+						data-testid="search-select-search"
+						placeholder="Search fields"
+						autocomplete="off"
+						[value]="searchText()"
+						(input)="onSearchInput($event)"
+					/>
+
 					<ul class="field-list">
-						@for (field of fields(); track field.fieldName) {
+						@for (field of filteredFields(); track field.fieldName) {
 							<li>
-								<button type="button" class="field-option" data-testid="field-option" [attr.data-field-kind]="field.kind" (click)="selectField(field)">
-									{{ field.fieldName }}
+								<button
+									type="button"
+									class="field-option"
+									data-testid="search-select-option"
+									[attr.data-field-kind]="field.kind"
+									(click)="selectField(field)"
+								>
+									{{ labelForField(field.fieldName) }}
 								</button>
 							</li>
 						}
@@ -71,8 +96,8 @@ interface DrillStep {
 			cursor: pointer;
 		}
 		.panel {
-			min-width: 12rem;
-			max-height: 16rem;
+			min-width: 14rem;
+			max-height: 18rem;
 			overflow-y: auto;
 			padding: var(--s-2);
 			border-radius: var(--r-md);
@@ -97,6 +122,18 @@ interface DrillStep {
 			cursor: pointer;
 			padding: 0;
 		}
+		.search-input {
+			font: inherit;
+			font-size: var(--fs-sm);
+			width: 100%;
+			box-sizing: border-box;
+			padding: var(--s-1) var(--s-2);
+			margin-bottom: var(--s-2);
+			border-radius: var(--r-sm);
+			border: 1px solid var(--line);
+			background: var(--surface);
+			color: var(--ink);
+		}
 		.field-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 		.field-option {
 			font: inherit;
@@ -110,7 +147,7 @@ interface DrillStep {
 			cursor: pointer;
 		}
 		.field-option:hover { background: var(--surface-sunken); }
-		.trigger:focus-visible, .breadcrumb-step:focus-visible, .field-option:focus-visible {
+		.trigger:focus-visible, .breadcrumb-step:focus-visible, .field-option:focus-visible, .search-input:focus-visible {
 			outline: 2px solid var(--accent);
 			outline-offset: 2px;
 		}
@@ -120,17 +157,28 @@ export class FieldPathPickerComponent {
 	readonly catalog = input.required<QueryBuilderCatalog>();
 	readonly rootTypeName = input.required<string>();
 	readonly path = input<readonly string[]>([]);
+	readonly triggerTestId = input<string>('field-path-trigger');
+	readonly triggerLabel = input<string | null>(null);
 	readonly pathChosen = output<readonly string[]>();
+
+	private readonly metadata = inject(QUERY_BUILDER_METADATA);
 
 	protected readonly isOpen = signal(false);
 	protected readonly drillSteps = signal<readonly DrillStep[]>([]);
+	protected readonly searchText = signal('');
 
 	protected readonly currentTypeName = computed(() => {
 		const steps = this.drillSteps();
 		return steps.length > 0 ? steps[steps.length - 1].typeName : this.rootTypeName();
 	});
 
-	protected readonly triggerLabel = computed(() => (this.path().length > 0 ? this.path().join('.') : 'Choose field'));
+	protected readonly currentResourceName = computed(() => resourceNameFromTypeName(this.currentTypeName()));
+
+	protected readonly displayLabel = computed(() => {
+		const override = this.triggerLabel();
+		if (override !== null) return override;
+		return this.path().length > 0 ? this.path().join('.') : 'Choose field';
+	});
 
 	private readonly drillStepsResource = resource({
 		params: () => ({ rootTypeName: this.rootTypeName(), path: this.path() }),
@@ -150,9 +198,29 @@ export class FieldPathPickerComponent {
 
 	protected readonly fields = computed(() => this.fieldsResource.value().filter((field) => field.kind !== 'aggregatePredicate'));
 
+	protected readonly filteredFields = computed(() => {
+		const searchTerm = this.searchText().trim().toLowerCase();
+		if (searchTerm === '') return this.fields();
+		return this.fields().filter((field) => this.labelForField(field.fieldName).toLowerCase().includes(searchTerm));
+	});
+
+	protected labelForField(fieldName: string): string {
+		return resolveFieldLabel(this.metadata, this.currentResourceName(), fieldName);
+	}
+
+	protected breadcrumbLabel(step: DrillStep, index: number): string {
+		const owningTypeName = index === 0 ? this.rootTypeName() : this.drillSteps()[index - 1].typeName;
+		return resolveFieldLabel(this.metadata, resourceNameFromTypeName(owningTypeName), step.fieldName);
+	}
+
+	protected onSearchInput(event: Event): void {
+		this.searchText.set((event.target as HTMLInputElement).value);
+	}
+
 	protected selectField(field: CatalogFieldDescriptor): void {
 		if (field.kind === 'relation') {
 			this.drillSteps.update((steps) => [...steps, { fieldName: field.fieldName, typeName: field.booleanExpressionTypeName }]);
+			this.searchText.set('');
 			return;
 		}
 		if (field.kind === 'scalar') {
@@ -160,6 +228,7 @@ export class FieldPathPickerComponent {
 			this.pathChosen.emit(fullPath);
 			this.isOpen.set(false);
 			this.drillSteps.set([]);
+			this.searchText.set('');
 		}
 	}
 
@@ -181,5 +250,6 @@ export class FieldPathPickerComponent {
 
 	protected stepBackTo(index: number): void {
 		this.drillSteps.update((steps) => steps.slice(0, index));
+		this.searchText.set('');
 	}
 }
