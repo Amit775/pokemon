@@ -96,4 +96,50 @@ describe('value source search', () => {
 
 		await expect(pending).rejects.toThrow('field "type" not found');
 	});
+
+	it('skips a row whose value field is null instead of rejecting the whole search', async () => {
+		const { search, controller } = setup();
+		const pending = search({ resourceName: 'type', valueFieldName: 'name' }, '');
+
+		controller.expectOne('/api/graphql').flush({ data: { type: [{ name: 'grass' }, { name: null }, { name: 'fire' }] } });
+
+		await expect(pending).resolves.toEqual([
+			{ value: 'grass', label: 'Grass' },
+			{ value: 'fire', label: 'Fire' },
+		]);
+	});
+
+	it('coerces a numeric value field into a string value instead of crashing', async () => {
+		const { search, controller } = setup();
+		const pending = search({ resourceName: 'pokemon_species', valueFieldName: 'id' }, '');
+
+		controller.expectOne('/api/graphql').flush({ data: { pokemon_species: [{ id: 6 }] } });
+
+		await expect(pending).resolves.toEqual([{ value: '6', label: '6' }]);
+	});
+
+	it('orders ascending by the displayed field, with asc as an unquoted enum value', async () => {
+		const { search, controller } = setup();
+		const pending = search({ resourceName: 'type', valueFieldName: 'name' }, '');
+
+		const request = controller.expectOne('/api/graphql');
+		expect(request.request.body.query).toContain('order_by: {name: asc}');
+		expect(request.request.body.query).not.toContain('"asc"');
+
+		request.flush({ data: { type: [] } });
+
+		await pending;
+	});
+
+	it('escapes ILIKE metacharacters in the search text before binding the variable', async () => {
+		const { search, controller } = setup();
+		const pending = search({ resourceName: 'move', valueFieldName: 'name' }, '50%_off');
+
+		const request = controller.expectOne('/api/graphql');
+		expect(request.request.body.variables).toEqual({ searchText: '%50\\%\\_off%' });
+
+		request.flush({ data: { move: [] } });
+
+		await pending;
+	});
 });
