@@ -1,10 +1,17 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { createComponentFactory, type Spectator } from '@ngneat/spectator/jest';
+import { QUERY_BUILDER_ENDPOINT } from '../../metadata/query-builder-metadata';
 import type { FilterOperand } from '../../core/model/query-tree';
 import { OperandEditorComponent } from './operand-editor.component';
 
 describe('OperandEditorComponent', () => {
 	let spectator: Spectator<OperandEditorComponent>;
-	const createComponent = createComponentFactory({ component: OperandEditorComponent });
+	let httpMock: HttpTestingController;
+	const createComponent = createComponentFactory({
+		component: OperandEditorComponent,
+		providers: [provideHttpClient(), provideHttpClientTesting(), { provide: QUERY_BUILDER_ENDPOINT, useValue: '/api/graphql' }],
+	});
 
 	it('renders a literal input by default', () => {
 		spectator = createComponent({ props: { operand: { source: 'literal', value: 'pikachu' } } });
@@ -13,6 +20,7 @@ describe('OperandEditorComponent', () => {
 		expect(literalInput).toExist();
 		expect(literalInput?.value).toBe('pikachu');
 		expect(spectator.query('[data-testid="operand-subquery-editor"]')).not.toExist();
+		expect(spectator.query('[data-testid="value-select"]')).not.toExist();
 	});
 
 	it('reveals the subquery editor when the source switches to subquery', () => {
@@ -144,5 +152,81 @@ describe('OperandEditorComponent', () => {
 		expect(resolved).toExist();
 		expect(resolved?.textContent).toContain('avg of height on Pokemon');
 		expect(resolved?.textContent).toContain('12');
+	});
+
+	describe('with a shortcut-declared value source', () => {
+		beforeEach(() => {
+			spectator = createComponent({
+				props: { operand: { source: 'literal', value: null }, valueSource: { resourceName: 'type', valueFieldName: 'name' } },
+			});
+			httpMock = spectator.inject(HttpTestingController);
+		});
+
+		afterEach(() => {
+			httpMock.verify();
+		});
+
+		it('offers value options from the shortcut value source, humanized, and emits the raw slug', async () => {
+			const emitted: FilterOperand[] = [];
+			spectator.component.operandChange.subscribe((operand: FilterOperand) => emitted.push(operand));
+
+			spectator.click('[data-testid="value-select"] [data-testid="search-select-trigger"]');
+			httpMock.expectOne('/api/graphql').flush({ data: { type: [{ name: 'grass' }, { name: 'fire' }] } });
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+			expect(labels).toEqual(['Grass', 'Fire']);
+
+			spectator.click('[data-testid="search-select-option"]');
+			expect(emitted).toEqual([{ source: 'literal', value: 'grass' }]);
+		});
+
+		it('shows an error rather than an empty list when the value query fails', async () => {
+			spectator.click('[data-testid="value-select"] [data-testid="search-select-trigger"]');
+			httpMock.expectOne('/api/graphql').flush({ errors: [{ message: 'field "type" not found' }] });
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			expect(spectator.query('[data-testid="search-select-error"]')).toContainText('not found');
+			expect(spectator.query('[data-testid="search-select-empty"]')).not.toExist();
+		});
+
+		it('debounces re-querying on typed search text to a single request', () => {
+			jest.useFakeTimers({ doNotFake: ['queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame'] });
+			try {
+				spectator.click('[data-testid="value-select"] [data-testid="search-select-trigger"]');
+				spectator.detectChanges();
+				httpMock.expectOne('/api/graphql').flush({ data: { type: [] } });
+				spectator.detectChanges();
+
+				const searchInput = spectator.query<HTMLInputElement>('[data-testid="search-select-search"]');
+				if (!searchInput) throw new Error('expected the search input inside the value select');
+
+				spectator.typeInElement('g', searchInput);
+				jest.advanceTimersByTime(50);
+				spectator.typeInElement('gr', searchInput);
+				jest.advanceTimersByTime(50);
+				spectator.typeInElement('gra', searchInput);
+
+				httpMock.expectNone('/api/graphql');
+
+				jest.advanceTimersByTime(200);
+				spectator.detectChanges();
+
+				const request = httpMock.expectOne('/api/graphql');
+				expect(request.request.body.variables).toEqual({ searchText: '%gra%' });
+				request.flush({ data: { type: [] } });
+			} finally {
+				jest.useRealTimers();
+			}
+		});
+	});
+
+	it('keeps the plain literal input when no value source is declared', () => {
+		spectator = createComponent({ props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Int' } });
+
+		expect(spectator.query('[data-testid="operand-literal-input"]')).toExist();
+		expect(spectator.query('[data-testid="value-select"]')).not.toExist();
 	});
 });

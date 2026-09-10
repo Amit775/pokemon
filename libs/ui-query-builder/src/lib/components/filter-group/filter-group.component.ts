@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output, resource, signal } from '@angular/core';
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
+import { SearchSelectComponent, type SearchSelectOption } from '@pokemon-center/ui-pokedex';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { CatalogFieldDescriptor } from '../../core/metadata/introspection-types';
 import {
@@ -12,8 +13,16 @@ import {
 	type RelationQuantifier,
 	type RelationScope,
 } from '../../core/model/query-tree';
+import { QUERY_BUILDER_METADATA } from '../../metadata/query-builder-metadata';
+import { resolveFieldLabel } from '../../metadata/resolve-labels';
 import { QueryBuilderStore } from '../../session/query-builder.store';
 import { FilterRuleComponent } from '../filter-rule/filter-rule.component';
+
+const boolExpSuffixPattern = /_bool_exp$/;
+
+function resourceNameFromTypeName(typeName: string): string {
+	return typeName.replace(boolExpSuffixPattern, '');
+}
 
 export interface FilterGroupPatch {
 	readonly nodeId: string;
@@ -57,7 +66,7 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 @Component({
 	selector: 'pokedex-filter-group',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [CdkListbox, CdkOption, FilterRuleComponent, FilterGroupComponent],
+	imports: [CdkListbox, CdkOption, FilterRuleComponent, FilterGroupComponent, SearchSelectComponent],
 	template: `
 		<div class="filter-group">
 			<div class="controls">
@@ -68,14 +77,14 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 
 				<button type="button" class="negate-toggle" data-testid="negate-toggle" [attr.aria-pressed]="group().negated" (click)="toggleNegated()">NOT</button>
 
-				<input
-					type="text"
-					class="relation-scope-input"
-					placeholder="relation path"
-					data-testid="relation-scope-field-path"
-					[value]="group().relationScope?.fieldPath?.join('.') ?? ''"
-					(input)="setRelationScopeFieldPath($any($event.target).value)"
-				/>
+				<div class="relation-scope-select" data-testid="relation-scope-select">
+					<pokedex-search-select
+						[options]="relationScopeOptions()"
+						[value]="group().relationScope?.fieldPath?.[0] ?? null"
+						placeholder="Relation scope"
+						(valueChosen)="setRelationScopeFieldName($event)"
+					/>
+				</div>
 
 				@if (group().relationScope) {
 					<ul
@@ -151,15 +160,7 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 			cursor: pointer;
 		}
 		.negate-toggle[aria-pressed='true'] { background: var(--crit); color: var(--accent-ink); border-color: var(--crit); }
-		.relation-scope-input {
-			font: inherit;
-			font-size: var(--fs-sm);
-			padding: var(--s-1) var(--s-2);
-			border-radius: var(--r-sm);
-			border: 1px solid var(--line);
-			background: var(--surface);
-			color: var(--ink);
-		}
+		.relation-scope-select { display: flex; }
 		button:focus-visible, input:focus-visible, li:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 		.children { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-2); }
 		.child { display: flex; align-items: flex-start; gap: var(--s-2); padding-left: var(--s-3); border-left: 2px solid var(--line); }
@@ -184,9 +185,24 @@ export class FilterGroupComponent {
 	protected readonly isFilterRule = isFilterRule;
 
 	private readonly store = inject(QueryBuilderStore, { optional: true });
+	private readonly metadata = inject(QUERY_BUILDER_METADATA);
 
 	protected readonly childTypeName = signal('');
 	protected readonly comparisonTypeNames = signal<ReadonlyMap<string, string>>(new Map());
+
+	private readonly rootTypeFieldsResource = resource({
+		params: () => ({ catalog: this.catalog(), rootTypeName: this.rootTypeName() }),
+		loader: ({ params }) => params.catalog.readBooleanExpressionFields(params.rootTypeName),
+		defaultValue: [] as readonly CatalogFieldDescriptor[],
+	});
+
+	protected readonly relationScopeOptions = computed<readonly SearchSelectOption[]>(() => {
+		const resourceName = resourceNameFromTypeName(this.rootTypeName());
+		return this.rootTypeFieldsResource
+			.value()
+			.filter((field): field is CatalogFieldDescriptor & { kind: 'relation' } => field.kind === 'relation' && field.cardinality === 'toMany')
+			.map((field) => ({ value: field.fieldName, label: resolveFieldLabel(this.metadata, resourceName, field.fieldName) }));
+	});
 
 	constructor() {
 		effect(() => {
@@ -227,13 +243,9 @@ export class FilterGroupComponent {
 		this.groupPatched.emit({ nodeId: this.group().nodeId, relationScope });
 	}
 
-	protected setRelationScopeFieldPath(rawFieldPath: string): void {
-		const fieldPath = rawFieldPath
-			.split('.')
-			.map((segment) => segment.trim())
-			.filter((segment) => segment.length > 0);
+	protected setRelationScopeFieldName(fieldName: string): void {
 		const quantifier = this.group().relationScope?.quantifier ?? 'some';
-		this.setRelationScope(fieldPath.length > 0 ? { fieldPath, quantifier } : null);
+		this.setRelationScope({ fieldPath: [fieldName], quantifier });
 	}
 
 	protected setRelationScopeQuantifier(quantifier: RelationQuantifier): void {

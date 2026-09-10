@@ -64,7 +64,12 @@ function findNode(root: FilterGroup, nodeId: string): QueryBuilderNode | null {
 					(shortcutChosen)="handleShortcutChosen($event)"
 				/>
 
-				<pokedex-selection-editor [resourceName]="store.resourceName()" [selection]="store.selection()" (selectionChanged)="store.setSelection($event)" />
+				<pokedex-selection-editor
+					[resourceName]="store.resourceName()"
+					[selection]="store.selection()"
+					[catalog]="catalog()"
+					(selectionChanged)="store.setSelection($event)"
+				/>
 
 				<pokedex-query-preview [compileResult]="store.compileResult()" />
 			}

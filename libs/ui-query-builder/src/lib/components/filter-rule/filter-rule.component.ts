@@ -84,6 +84,7 @@ async function resolvesToScalarLeaf(catalog: QueryBuilderCatalog, rootTypeName: 
 					[operand]="ruleModel().operand"
 					[argumentTypeName]="selectedOperatorDescriptor()?.argumentTypeName ?? ''"
 					[acceptsList]="selectedOperatorDescriptor()?.acceptsList ?? false"
+					[valueSource]="selectedShortcut()?.valueSource ?? null"
 					(operandChange)="setOperand($event)"
 				/>
 			</div>
@@ -142,11 +143,12 @@ export class FilterRuleComponent {
 		this.shortcuts().map((shortcut) => ({ value: shortcut.shortcutId, label: shortcut.displayName })),
 	);
 
-	protected readonly selectedShortcutValue = computed(() => {
+	protected readonly selectedShortcut = computed(() => {
 		const currentFieldPath = this.ruleModel().fieldPath.join('.');
-		const matchingShortcut = this.shortcuts().find((shortcut) => !shortcut.scope && shortcut.fieldPath.join('.') === currentFieldPath);
-		return matchingShortcut?.shortcutId ?? null;
+		return this.shortcuts().find((shortcut) => !shortcut.scope && shortcut.fieldPath.join('.') === currentFieldPath) ?? null;
 	});
+
+	protected readonly selectedShortcutValue = computed(() => this.selectedShortcut()?.shortcutId ?? null);
 
 	protected readonly pinnedLabel = computed(() => {
 		const currentRule = this.ruleModel();

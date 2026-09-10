@@ -100,7 +100,16 @@ export const QueryBuilderStore = signalStore(
 	})),
 	withMethods((store) => ({
 		selectResource(resourceName: string): void {
-			patchState(store, { resourceName, filter: createFilterGroup() });
+			const initialState = createInitialState();
+			patchState(store, {
+				resourceName,
+				filter: createFilterGroup(),
+				selection: initialState.selection,
+				ordering: initialState.ordering,
+				resolvedValues: initialState.resolvedValues,
+				variableTypeNames: initialState.variableTypeNames,
+				comparisonTypeNames: initialState.comparisonTypeNames,
+			});
 		},
 		addRule(parentGroupNodeId: string): void {
 			patchState(store, {

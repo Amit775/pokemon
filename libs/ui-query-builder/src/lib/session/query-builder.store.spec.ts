@@ -73,6 +73,33 @@ describe('QueryBuilderStore', () => {
 		expect(store.filter().combinator).toBe('and');
 	});
 
+	it('resets both filter and selection when the resource changes', () => {
+		const store = createStore();
+		store.selectResource('pokemon');
+		store.setSelection({ fieldName: '', children: [{ fieldName: 'name', children: [] }] });
+
+		store.selectResource('move');
+
+		expect(store.filter().children).toEqual([]);
+		expect(store.selection().children).toEqual([]);
+	});
+
+	it('resets ordering, resolved values, variable type names, and comparison type names when the resource changes', () => {
+		const store = createStore();
+		store.selectResource('pokemon');
+		store.addRule(store.filter().nodeId);
+		const ruleNodeId = store.filter().children[0].nodeId;
+		store.setComparisonTypeName(ruleNodeId, 'String_comparison_exp');
+		store.setResolvedValue('variable_1', 'grass', 'String');
+
+		store.selectResource('move');
+
+		expect(store.ordering()).toEqual([{ fieldPath: ['id'], direction: 'asc' }]);
+		expect(store.resolvedValues().size).toBe(0);
+		expect(store.variableTypeNames().size).toBe(0);
+		expect(store.comparisonTypeNames().size).toBe(0);
+	});
+
 	it('replaces a rule with a group at a nested depth, preserving sibling order', () => {
 		const store = createStore();
 		store.addGroup(store.filter().nodeId);

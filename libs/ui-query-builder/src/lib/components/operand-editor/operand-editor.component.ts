@@ -1,7 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, Injector, computed, inject, input, output, resource, runInInjectionContext, signal } from '@angular/core';
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
+import { SearchSelectComponent, type SearchSelectOption } from '@pokemon-center/ui-pokedex';
 import { coerceToGraphQLType, type LiteralScalar, type LiteralValue } from '../../core/model/literal-value';
 import type { FilterOperand } from '../../core/model/query-tree';
+import type { ValueSource } from '../../metadata/query-builder-metadata';
+import { createValueSourceSearch, type ValueOption } from '../../session/value-source-search';
+
+const valueSourceSearchDebounceMilliseconds = 200;
+
+interface ValueSourceSearchTrigger {
+	readonly source: ValueSource;
+	readonly searchText: string;
+}
 
 function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScalar {
 	const trimmedValue = rawValue.trim();
@@ -24,7 +34,7 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 @Component({
 	selector: 'pokedex-operand-editor',
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	imports: [CdkListbox, CdkOption],
+	imports: [CdkListbox, CdkOption, SearchSelectComponent],
 	template: `
 		<div class="operand-editor">
 			<ul
@@ -39,13 +49,28 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 			</ul>
 
 			@if (operand().source === 'literal') {
-				<input
-					type="text"
-					class="literal-input"
-					data-testid="operand-literal-input"
-					[value]="literalDisplayValue()"
-					(input)="setLiteralValue($any($event.target).value)"
-				/>
+				@if (valueSource(); as source) {
+					<pokedex-search-select
+						class="value-select"
+						data-testid="value-select"
+						[options]="valueOptions()"
+						[value]="literalDisplayValue() || null"
+						placeholder="Choose value"
+						[loading]="valueQueryLoading()"
+						[errorMessage]="valueQueryError()"
+						(valueChosen)="chooseValueSourceOption($event)"
+						(searchTextChanged)="onValueSearchTextChanged($event, source)"
+						(click)="onValueSelectAreaClicked($event, source)"
+					/>
+				} @else {
+					<input
+						type="text"
+						class="literal-input"
+						data-testid="operand-literal-input"
+						[value]="literalDisplayValue()"
+						(input)="setLiteralValue($any($event.target).value)"
+					/>
+				}
 			}
 
 			@if (operand().source === 'subquery') {
@@ -104,6 +129,7 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 			outline-offset: 2px;
 		}
 		.subquery-editor { display: flex; flex-direction: column; gap: var(--s-1); }
+		.value-select { display: flex; }
 		.resolved-value { margin: 0; font-size: var(--fs-xs); color: var(--ink-muted); }
 	`,
 })
@@ -112,7 +138,45 @@ export class OperandEditorComponent {
 	readonly resolvedValue = input<LiteralValue | null>(null);
 	readonly argumentTypeName = input<string>('');
 	readonly acceptsList = input<boolean>(false);
+	readonly valueSource = input<ValueSource | null>(null);
 	readonly operandChange = output<FilterOperand>();
+
+	private readonly injector = inject(Injector);
+	private readonly destroyRef = inject(DestroyRef);
+	private debounceTimeoutId: ReturnType<typeof setTimeout> | null = null;
+	private searchValueSourceOptions: ((source: ValueSource, searchText: string) => Promise<readonly ValueOption[]>) | null = null;
+
+	protected readonly valueSearchTrigger = signal<ValueSourceSearchTrigger | undefined>(undefined);
+
+	private readonly valueSearchResource = resource({
+		params: () => this.valueSearchTrigger(),
+		loader: ({ params }) => this.getSearchValueSourceOptions()(params.source, params.searchText),
+		defaultValue: [] as readonly ValueOption[],
+	});
+
+	private getSearchValueSourceOptions(): (source: ValueSource, searchText: string) => Promise<readonly ValueOption[]> {
+		if (!this.searchValueSourceOptions) {
+			this.searchValueSourceOptions = runInInjectionContext(this.injector, () => createValueSourceSearch());
+		}
+		return this.searchValueSourceOptions;
+	}
+
+	protected readonly valueOptions = computed<readonly SearchSelectOption[]>(() => {
+		if (this.valueSearchResource.error() !== undefined) return [];
+		return this.valueSearchResource.value().map((option) => ({ value: option.value, label: option.label }));
+	});
+	protected readonly valueQueryLoading = computed(() => this.valueSearchResource.isLoading());
+	protected readonly valueQueryError = computed(() => {
+		const error = this.valueSearchResource.error();
+		if (error === undefined) return null;
+		return error instanceof Error ? error.message : String(error);
+	});
+
+	constructor() {
+		this.destroyRef.onDestroy(() => {
+			if (this.debounceTimeoutId !== null) clearTimeout(this.debounceTimeoutId);
+		});
+	}
 
 	protected readonly literalDisplayValue = computed(() => {
 		const operand = this.operand();
@@ -172,6 +236,25 @@ export class OperandEditorComponent {
 
 		const parsedValue = parseRawScalar(rawValue, argumentTypeName);
 		const value = parsedValue === null ? null : coerceToGraphQLType(parsedValue, argumentTypeName);
+		this.operandChange.emit({ source: 'literal', value });
+	}
+
+	protected onValueSelectAreaClicked(event: MouseEvent, source: ValueSource): void {
+		const target = event.target;
+		if (!(target instanceof HTMLElement) || !target.closest('[data-testid="search-select-trigger"]')) return;
+		if (this.debounceTimeoutId !== null) clearTimeout(this.debounceTimeoutId);
+		this.valueSearchTrigger.set({ source, searchText: '' });
+	}
+
+	protected onValueSearchTextChanged(searchText: string, source: ValueSource): void {
+		if (this.debounceTimeoutId !== null) clearTimeout(this.debounceTimeoutId);
+		this.debounceTimeoutId = setTimeout(() => {
+			this.debounceTimeoutId = null;
+			this.valueSearchTrigger.set({ source, searchText });
+		}, valueSourceSearchDebounceMilliseconds);
+	}
+
+	protected chooseValueSourceOption(value: string): void {
 		this.operandChange.emit({ source: 'literal', value });
 	}
 
