@@ -8,9 +8,26 @@ import { QueryExplorerComponent } from './query-explorer.component';
 
 const endpointUrl = '/api/query-builder/graphql';
 
+const introspectionOperationNamePattern = /\bquery\s+Introspect\w*/;
+
 function isIntrospectionRequest(body: unknown): boolean {
-	return typeof (body as { query?: unknown } | null)?.query === 'string' && (body as { query: string }).query.includes('IntrospectType');
+	const query = (body as { query?: unknown } | null)?.query;
+	return typeof query === 'string' && introspectionOperationNamePattern.test(query);
 }
+
+describe('the spec helper that separates introspection reads from data requests', () => {
+	it('recognises every introspection query the query builder can issue', () => {
+		expect(isIntrospectionRequest({ query: 'query IntrospectType($typeName: String!) { __type(name: $typeName) { name } }' })).toBe(true);
+		expect(isIntrospectionRequest({ query: 'query IntrospectOutputType($typeName: String!) { __type(name: $typeName) { name } }' })).toBe(true);
+		expect(isIntrospectionRequest({ query: 'query IntrospectQueryRoot { __schema { queryType { name } } }' })).toBe(true);
+	});
+
+	it('does not mistake a data request for an introspection read', () => {
+		expect(isIntrospectionRequest({ query: 'query BuiltQuery { pokemon { id } }' })).toBe(false);
+		expect(isIntrospectionRequest({ query: 'query SearchValueSource { type { name } }' })).toBe(false);
+		expect(isIntrospectionRequest(null)).toBe(false);
+	});
+});
 
 function flushResourceDiscoveryIfPending(httpMock: HttpTestingController): void {
 	for (const request of httpMock.match((requested) => requested.url === endpointUrl)) {
