@@ -19,6 +19,7 @@ export * from './lib/metadata/humanize-name';
 export * from './lib/metadata/resolve-labels';
 export * from './lib/session/http-introspection-fetcher';
 export * from './lib/session/query-builder.store';
+export * from './lib/session/value-source-search';
 export * from './lib/components/field-path-picker/field-path-picker.component';
 export * from './lib/components/operand-editor/operand-editor.component';
 export * from './lib/components/filter-rule/filter-rule.component';
