@@ -84,6 +84,7 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 						[options]="relationScopeOptions()"
 						[value]="group().relationScope?.fieldPath?.[0] ?? null"
 						placeholder="Relation scope"
+						[loading]="relationScopeOptionsLoading()"
 						(valueChosen)="setRelationScopeFieldName($event)"
 						(click)="onRelationScopeAreaClicked($event)"
 					/>
@@ -209,6 +210,8 @@ export class FilterGroupComponent {
 			.map((field) => ({ value: field.fieldName, label: resolveFieldLabel(this.metadata, resourceName, field.fieldName) }));
 		return [{ value: clearRelationScopeValue, label: 'No relation scope' }, ...relationOptions];
 	});
+
+	protected readonly relationScopeOptionsLoading = computed(() => this.rootTypeFieldsResource.isLoading());
 
 	constructor() {
 		effect(() => {

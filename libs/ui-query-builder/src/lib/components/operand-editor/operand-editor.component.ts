@@ -115,6 +115,7 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 							[options]="subqueryFieldOptions()"
 							[value]="subqueryFieldPath() || null"
 							placeholder="Choose field"
+							[loading]="subqueryFieldLoading()"
 							[errorMessage]="subqueryFieldError()"
 							(valueChosen)="setSubqueryFieldPath($event)"
 							(click)="onSubqueryFieldAreaClicked($event)"
@@ -267,6 +268,8 @@ export class OperandEditorComponent {
 		if (error === undefined) return null;
 		return error instanceof Error ? error.message : String(error);
 	});
+
+	protected readonly subqueryFieldLoading = computed(() => this.subqueryFieldsResource.isLoading());
 
 	protected readonly valueOptions = computed<readonly SearchSelectOption[]>(() => {
 		if (this.valueSearchResource.error() !== undefined) return [];

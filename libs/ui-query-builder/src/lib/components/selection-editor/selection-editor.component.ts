@@ -32,6 +32,7 @@ const emptyQueryBuilderCatalog: QueryBuilderCatalog = {
 					[options]="fieldOptions()"
 					[value]="null"
 					placeholder="Add field"
+					[loading]="fieldOptionsLoading()"
 					(valueChosen)="addField($event)"
 					(click)="onAddFieldAreaClicked($event)"
 				/>
@@ -82,6 +83,8 @@ export class SelectionEditorComponent {
 			.filter((field) => field.kind === 'scalar')
 			.map((field) => ({ value: field.fieldName, label: this.fieldLabel(field.fieldName) })),
 	);
+
+	protected readonly fieldOptionsLoading = computed(() => this.outputFieldsResource.isLoading());
 
 	private lastDefaultedResourceName: string | null = null;
 

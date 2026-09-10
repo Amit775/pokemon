@@ -110,6 +110,36 @@ describe('SelectionEditorComponent', () => {
 		expect(readOutputObjectFields).toHaveBeenCalledTimes(1);
 	});
 
+	it('shows the loading state, not the empty state, while the deferred field read is in flight', async () => {
+		let resolveOutputFields: ((fields: readonly OutputFieldDescriptor[]) => void) | undefined;
+		const deferredCatalog: QueryBuilderCatalog = {
+			readBooleanExpressionFields: async () => [],
+			readOperatorsForComparisonType: async () => [],
+			readOutputObjectFields: () =>
+				new Promise<readonly OutputFieldDescriptor[]>((resolve) => {
+					resolveOutputFields = resolve;
+				}),
+		};
+		spectator = createComponent({
+			props: { resourceName: 'pokemon', catalog: deferredCatalog, selection: { fieldName: '', children: [] } },
+		});
+
+		spectator.click('[data-testid="selection-add"] [data-testid="search-select-trigger"]');
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="search-select-loading"]')).toExist();
+		expect(spectator.query('[data-testid="search-select-empty"]')).not.toExist();
+
+		if (!resolveOutputFields) throw new Error('expected the field read to have started');
+		resolveOutputFields(pokemonOutputFields);
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="search-select-loading"]')).not.toExist();
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toContain('Height');
+	});
+
 	it('picks selection fields from the output type', async () => {
 		spectator = createComponent({
 			props: { resourceName: 'pokemon', catalog: pokemonCatalog, selection: { fieldName: '', children: [] } },

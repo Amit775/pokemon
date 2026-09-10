@@ -147,6 +147,37 @@ describe('FilterGroupComponent relation scope picker', () => {
 		expect(readBooleanExpressionFields).toHaveBeenCalledTimes(1);
 	});
 
+	it('shows the loading state, not the empty state, while the deferred relation scope read is in flight', async () => {
+		let resolveFields: ((fields: readonly CatalogFieldDescriptor[]) => void) | undefined;
+		const deferredCatalog: QueryBuilderCatalog = {
+			readBooleanExpressionFields: () =>
+				new Promise<readonly CatalogFieldDescriptor[]>((resolve) => {
+					resolveFields = resolve;
+				}),
+			readOperatorsForComparisonType: async () => [],
+			readOutputObjectFields: async () => [],
+		};
+		const group = createFilterGroup();
+		spectator = createComponent({ props: { group, catalog: deferredCatalog, rootTypeName: 'pokemon_bool_exp' } });
+
+		spectator.click('[data-testid="relation-scope-select"] [data-testid="search-select-trigger"]');
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="search-select-loading"]')).toExist();
+		expect(spectator.query('[data-testid="search-select-empty"]')).not.toExist();
+
+		if (!resolveFields) throw new Error('expected the relation scope read to have started');
+		resolveFields([
+			{ kind: 'relation', fieldName: 'pokemonstats', booleanExpressionTypeName: 'pokemonstat_bool_exp', cardinality: 'toMany' },
+		]);
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="search-select-loading"]')).not.toExist();
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toContain('Stats');
+	});
+
 	it('picks the relation scope path instead of typing it', async () => {
 		const group = createFilterGroup();
 		spectator = createComponent({ props: { group, catalog: relationScopeCatalog, rootTypeName: 'pokemon_bool_exp' } });
