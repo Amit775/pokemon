@@ -15,3 +15,4 @@ export * from './lib/data-grid/data-grid.setup';
 export * from './lib/data-grid/data-grid.theme';
 export * from './lib/data-grid/data-grid.defaults';
 export * from './lib/data-grid/data-grid.component';
+export * from './lib/search-select/search-select.component';
