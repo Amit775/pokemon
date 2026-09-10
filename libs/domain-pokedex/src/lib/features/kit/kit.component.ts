@@ -5,6 +5,8 @@ import {
 	EntityPortraitComponent,
 	POKEMON_TYPES,
 	PokemonCardComponent,
+	SearchSelectComponent,
+	type SearchSelectOption,
 	SectionHeadingComponent,
 	StatBarComponent,
 	TypeChipComponent,
@@ -78,6 +80,7 @@ function buildKitRoster(): KitRoster[] {
 		UiTabsComponent,
 		ButtonComponent,
 		UiDataGridComponent,
+		SearchSelectComponent,
 	],
 	template: `
 		<div class="kit">
@@ -140,6 +143,17 @@ function buildKitRoster(): KitRoster[] {
 
 			<pokedex-section-heading label="Data table — virtualized, filtered" />
 			<pokedex-data-grid [rowData]="rosterRows" [columnDefs]="rosterColumns" [getRowId]="getRosterRowId" [sideBar]="false" />
+
+			<pokedex-section-heading label="Search select" />
+			<div class="row">
+				<pokedex-search-select
+					[options]="searchSelectOptions"
+					[value]="searchSelectValue()"
+					placeholder="Choose a resource"
+					(valueChosen)="searchSelectValue.set($event)"
+				/>
+				<p>Chosen: <strong>{{ searchSelectValue() ?? 'none' }}</strong></p>
+			</div>
 
 			<pokedex-section-heading label="Skeletons" />
 			<div class="skel">
@@ -220,6 +234,15 @@ export class KitComponent {
 		{ label: 'Moves', value: 'moves' },
 	];
 	protected readonly tab = signal('stats');
+
+	protected readonly searchSelectOptions: readonly SearchSelectOption[] = [
+		{ value: 'pokemon', label: 'Pokémon', group: 'Core' },
+		{ value: 'move', label: 'Move', group: 'Core' },
+		{ value: 'ability', label: 'Ability', group: 'Core' },
+		{ value: 'berry', label: 'Berry', group: 'Items' },
+		{ value: 'berryflavor', label: 'Berry Flavor', group: 'Items' },
+	];
+	protected readonly searchSelectValue = signal<string | null>(null);
 
 	protected readonly moveColumns = moveColumns;
 	protected readonly rosterColumns = rosterColumns;

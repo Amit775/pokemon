@@ -83,11 +83,59 @@ describe('SearchSelectComponent', () => {
 		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
 		const trigger = spectator.query('[data-testid="search-select-trigger"]');
 
+		expect(trigger).toHaveAttribute('role', 'combobox');
 		expect(trigger).toHaveAttribute('aria-haspopup', 'listbox');
 		expect(trigger).toHaveAttribute('aria-expanded', 'false');
 
 		spectator.click('[data-testid="search-select-trigger"]');
 		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-expanded', 'true');
+	});
+
+	it('chooses the active option when arrowing down then pressing Enter from the search input', () => {
+		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
+		const chosen: string[] = [];
+		spectator.component.valueChosen.subscribe((value: string) => chosen.push(value));
+
+		spectator.click('[data-testid="search-select-trigger"]');
+		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'Enter');
+
+		expect(chosen).toEqual(['pokemon']);
+	});
+
+	it('walks the filtered options, not the unfiltered ones, when arrowing from the search input', () => {
+		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
+		const chosen: string[] = [];
+		spectator.component.valueChosen.subscribe((value: string) => chosen.push(value));
+
+		spectator.click('[data-testid="search-select-trigger"]');
+		spectator.typeInElement('berry', '[data-testid="search-select-search"]');
+		spectator.detectChanges();
+		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'Enter');
+
+		expect(chosen).toEqual(['berryflavor']);
+	});
+
+	it('wires aria-activedescendant on the trigger to the active option and updates it as it moves', () => {
+		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
+
+		spectator.click('[data-testid="search-select-trigger"]');
+		expect(spectator.query('[data-testid="search-select-trigger"]')).not.toHaveAttribute('aria-activedescendant');
+
+		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		spectator.detectChanges();
+
+		const renderedOptions = spectator.queryAll('[data-testid="search-select-option"]');
+		const firstOptionId = renderedOptions[0].id;
+		expect(firstOptionId).toBeTruthy();
+		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', firstOptionId);
+
+		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		spectator.detectChanges();
+
+		const secondOptionId = renderedOptions[1].id;
+		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', secondOptionId);
 	});
 
 	it('closes on Escape without choosing anything', () => {

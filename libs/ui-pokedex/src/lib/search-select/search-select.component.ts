@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal, untracked } from '@angular/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { CdkListbox, CdkOption, type ListboxValueChangeEvent } from '@angular/cdk/listbox';
@@ -15,6 +15,8 @@ interface SearchSelectOptionGroup {
 	readonly options: readonly SearchSelectOption[];
 }
 
+let searchSelectInstanceSequence = 0;
+
 @Component({
 	selector: 'pokedex-search-select',
 	changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,8 +29,11 @@ interface SearchSelectOptionGroup {
 				cdkOverlayOrigin
 				#origin="cdkOverlayOrigin"
 				data-testid="search-select-trigger"
+				role="combobox"
 				aria-haspopup="listbox"
 				[attr.aria-expanded]="isOpen()"
+				[attr.aria-controls]="isOpen() ? panelId : null"
+				[attr.aria-activedescendant]="activeOptionId()"
 				(click)="toggleOpen()"
 			>
 				{{ triggerLabel() }}
@@ -43,7 +48,7 @@ interface SearchSelectOptionGroup {
 				(backdropClick)="close()"
 				(detach)="close()"
 			>
-				<div class="panel" cdkTrapFocus tabindex="-1" data-testid="search-select-panel">
+				<div class="panel" [id]="panelId" cdkTrapFocus tabindex="-1" data-testid="search-select-panel">
 					@if (searchable()) {
 						<input
 							type="text"
@@ -51,8 +56,12 @@ interface SearchSelectOptionGroup {
 							data-testid="search-select-search"
 							autocomplete="off"
 							[value]="searchText()"
+							[attr.aria-activedescendant]="activeOptionId()"
 							(input)="onSearchInput($event)"
 							(keydown.escape)="close()"
+							(keydown.arrowdown)="onArrowDown($event)"
+							(keydown.arrowup)="onArrowUp($event)"
+							(keydown.enter)="onEnter($event)"
 						/>
 					}
 					@if (loading()) {
@@ -68,7 +77,13 @@ interface SearchSelectOptionGroup {
 									<li class="group-header" data-testid="search-select-group">{{ group.name }}</li>
 								}
 								@for (option of group.options; track option.value) {
-									<li [cdkOption]="option.value" class="option" data-testid="search-select-option">
+									<li
+										[cdkOption]="option.value"
+										[id]="optionId(option.value)"
+										class="option"
+										data-testid="search-select-option"
+										[class.active]="option.value === activeValue()"
+									>
 										{{ option.label }}
 									</li>
 								}
@@ -135,7 +150,8 @@ interface SearchSelectOptionGroup {
 			color: var(--ink);
 			cursor: pointer;
 		}
-		.option:hover {
+		.option:hover,
+		.option.active {
 			background: var(--surface-sunken);
 		}
 		.status {
@@ -170,8 +186,11 @@ export class SearchSelectComponent {
 	readonly valueChosen = output<string>();
 	readonly searchTextChanged = output<string>();
 
+	protected readonly panelId = `search-select-panel-${searchSelectInstanceSequence++}`;
+
 	protected readonly isOpen = signal(false);
 	protected readonly searchText = signal('');
+	protected readonly activeValue = signal<string | null>(null);
 
 	protected readonly selectedValues = computed(() => {
 		const currentValue = this.value();
@@ -200,21 +219,77 @@ export class SearchSelectComponent {
 		return Array.from(groups.entries()).map(([name, groupOptions]) => ({ name, options: groupOptions }));
 	});
 
+	protected readonly flattenedOptions = computed<readonly SearchSelectOption[]>(() =>
+		this.groupedOptions().flatMap((group) => group.options),
+	);
+
+	protected readonly activeOptionId = computed(() => {
+		const activeValue = this.activeValue();
+		return activeValue === null ? null : this.optionId(activeValue);
+	});
+
+	private readonly synchronizeActiveValue = effect(() => {
+		const flattenedOptions = this.flattenedOptions();
+		const currentActiveValue = untracked(this.activeValue);
+		if (currentActiveValue !== null && !flattenedOptions.some((option) => option.value === currentActiveValue)) {
+			this.activeValue.set(flattenedOptions[0]?.value ?? null);
+		}
+	});
+
+	protected optionId(value: string): string {
+		return `${this.panelId}-option-${value}`;
+	}
+
 	protected toggleOpen(): void {
-		const nextOpen = !this.isOpen();
-		this.isOpen.set(nextOpen);
-		if (!nextOpen) this.searchText.set('');
+		if (this.isOpen()) {
+			this.close();
+		} else {
+			this.isOpen.set(true);
+		}
 	}
 
 	protected close(): void {
 		this.isOpen.set(false);
 		this.searchText.set('');
+		this.activeValue.set(null);
 	}
 
 	protected onSearchInput(event: Event): void {
 		const searchText = (event.target as HTMLInputElement).value;
 		this.searchText.set(searchText);
 		this.searchTextChanged.emit(searchText);
+	}
+
+	protected onArrowDown(event: Event): void {
+		event.preventDefault();
+		this.moveActive(1);
+	}
+
+	protected onArrowUp(event: Event): void {
+		event.preventDefault();
+		this.moveActive(-1);
+	}
+
+	protected onEnter(event: Event): void {
+		event.preventDefault();
+		const chosenValue = this.activeValue();
+		if (chosenValue === null) return;
+		this.valueChosen.emit(chosenValue);
+		this.close();
+	}
+
+	private moveActive(step: number): void {
+		const flattenedOptions = this.flattenedOptions();
+		if (flattenedOptions.length === 0) return;
+
+		const currentIndex = flattenedOptions.findIndex((option) => option.value === this.activeValue());
+		const nextIndex =
+			currentIndex === -1
+				? step > 0
+					? 0
+					: flattenedOptions.length - 1
+				: (currentIndex + step + flattenedOptions.length) % flattenedOptions.length;
+		this.activeValue.set(flattenedOptions[nextIndex].value);
 	}
 
 	protected onValueChange(event: ListboxValueChangeEvent<string>): void {
