@@ -3,7 +3,22 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { createComponentFactory, type Spectator } from '@ngneat/spectator/jest';
 import { QUERY_BUILDER_ENDPOINT } from '../../metadata/query-builder-metadata';
 import type { FilterOperand } from '../../core/model/query-tree';
+import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
+import type { OutputFieldDescriptor } from '../../core/metadata/introspection-types';
 import { OperandEditorComponent } from './operand-editor.component';
+
+const pokemonOutputFields: readonly OutputFieldDescriptor[] = [
+	{ kind: 'scalar', fieldName: 'height', scalarTypeName: 'Int' },
+	{ kind: 'scalar', fieldName: 'base_experience', scalarTypeName: 'Int' },
+];
+
+const typeOutputFields: readonly OutputFieldDescriptor[] = [{ kind: 'scalar', fieldName: 'name', scalarTypeName: 'String' }];
+
+const subqueryCatalog: QueryBuilderCatalog = {
+	readBooleanExpressionFields: async () => [],
+	readOperatorsForComparisonType: async () => [],
+	readOutputObjectFields: async (typeName) => (typeName === 'pokemon' ? pokemonOutputFields : typeName === 'type' ? typeOutputFields : []),
+};
 
 describe('OperandEditorComponent', () => {
 	let spectator: Spectator<OperandEditorComponent>;
@@ -228,5 +243,129 @@ describe('OperandEditorComponent', () => {
 
 		expect(spectator.query('[data-testid="operand-literal-input"]')).toExist();
 		expect(spectator.query('[data-testid="value-select"]')).not.toExist();
+	});
+
+	describe('subquery resource and field pickers', () => {
+		const emptySubqueryOperand: FilterOperand = {
+			source: 'subquery',
+			subquery: { resourceName: '', filter: null, selector: { kind: 'row', fieldPath: [], ordering: null } },
+		};
+
+		beforeEach(() => {
+			spectator = createComponent({ props: { operand: emptySubqueryOperand } });
+			httpMock = spectator.inject(HttpTestingController);
+		});
+
+		afterEach(() => {
+			httpMock.verify();
+		});
+
+		it('has no free-text inputs for the resource or the field path', () => {
+			expect(spectator.query('[data-testid="operand-subquery-resource"] input')).not.toExist();
+			expect(spectator.query('[data-testid="operand-subquery-field-path"] input:not([data-testid="search-select-search"])')).not.toExist();
+		});
+
+		it('offers discovered resources, labelled and sorted, and emits the same operand shape as before', async () => {
+			const emitted: FilterOperand[] = [];
+			spectator.component.operandChange.subscribe((operand: FilterOperand) => emitted.push(operand));
+
+			spectator.click('[data-testid="operand-subquery-resource"] [data-testid="search-select-trigger"]');
+			httpMock.expectOne('/api/graphql').flush({
+				data: {
+					__type: {
+						fields: [
+							{ name: 'zubat', args: [{ name: 'where', type: { kind: 'INPUT_OBJECT', name: 'zubat_bool_exp' } }] },
+							{ name: 'arbok', args: [{ name: 'where', type: { kind: 'INPUT_OBJECT', name: 'arbok_bool_exp' } }] },
+						],
+					},
+				},
+			});
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+			expect(labels).toEqual(['Arbok', 'Zubat']);
+			expect(labels).not.toContain('zubat');
+
+			const arbokOption = spectator
+				.queryAll<HTMLElement>('[data-testid="search-select-option"]')
+				.find((option) => option.textContent?.trim() === 'Arbok');
+			if (!arbokOption) throw new Error('expected an Arbok option');
+			spectator.click(arbokOption);
+
+			expect(emitted).toEqual([
+				{ source: 'subquery', subquery: { resourceName: 'arbok', filter: null, selector: { kind: 'row', fieldPath: [], ordering: null } } },
+			]);
+		});
+
+		it('leaves the field-path picker empty without erroring when no resource is chosen', () => {
+			expect(spectator.query('[data-testid="operand-subquery-field-path"] [data-testid="search-select-error"]')).not.toExist();
+			expect(spectator.queryAll('[data-testid="operand-subquery-field-path"] [data-testid="search-select-option"]')).toHaveLength(0);
+		});
+
+		it('offers output fields for the chosen resource, labelled, and emits the field path array on selection', async () => {
+			spectator.setInput('operand', {
+				source: 'subquery',
+				subquery: { resourceName: 'pokemon', filter: null, selector: { kind: 'row', fieldPath: [], ordering: null } },
+			});
+			spectator.setInput('catalog', subqueryCatalog);
+			spectator.detectChanges();
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			const emitted: FilterOperand[] = [];
+			spectator.component.operandChange.subscribe((operand: FilterOperand) => emitted.push(operand));
+
+			spectator.click('[data-testid="operand-subquery-field-path"] [data-testid="search-select-trigger"]');
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+			expect(labels).toContain('Height');
+			expect(labels).not.toContain('height');
+
+			const heightOption = spectator
+				.queryAll<HTMLElement>('[data-testid="search-select-option"]')
+				.find((option) => option.textContent?.trim() === 'Height');
+			if (!heightOption) throw new Error('expected a Height option');
+			spectator.click(heightOption);
+
+			expect(emitted).toEqual([
+				{
+					source: 'subquery',
+					subquery: { resourceName: 'pokemon', filter: null, selector: { kind: 'row', fieldPath: ['height'], ordering: null } },
+				},
+			]);
+		});
+
+		it('refreshes the field options when the resource changes', async () => {
+			spectator.setInput('operand', {
+				source: 'subquery',
+				subquery: { resourceName: 'pokemon', filter: null, selector: { kind: 'row', fieldPath: [], ordering: null } },
+			});
+			spectator.setInput('catalog', subqueryCatalog);
+			spectator.detectChanges();
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			spectator.click('[data-testid="operand-subquery-field-path"] [data-testid="search-select-trigger"]');
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			let labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+			expect(labels).toContain('Height');
+
+			spectator.setInput('operand', {
+				source: 'subquery',
+				subquery: { resourceName: 'type', filter: null, selector: { kind: 'row', fieldPath: [], ordering: null } },
+			});
+			spectator.detectChanges();
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+			expect(labels).not.toContain('Height');
+			expect(labels).toContain('Name');
+		});
 	});
 });

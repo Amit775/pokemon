@@ -85,6 +85,7 @@ async function resolvesToScalarLeaf(catalog: QueryBuilderCatalog, rootTypeName: 
 					[argumentTypeName]="selectedOperatorDescriptor()?.argumentTypeName ?? ''"
 					[acceptsList]="selectedOperatorDescriptor()?.acceptsList ?? false"
 					[valueSource]="selectedShortcut()?.valueSource ?? null"
+					[catalog]="catalog()"
 					(operandChange)="setOperand($event)"
 				/>
 			</div>

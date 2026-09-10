@@ -220,4 +220,27 @@ describe('FilterRuleComponent shortcut-first field picker', () => {
 
 		expect(latestRule.operatorName).toBe('_like');
 	});
+
+	it('passes its catalog down to the operand editor so the subquery field picker resolves output fields for the chosen resource', async () => {
+		spectator = createComponent({
+			props: {
+				...baseProps,
+				rule: createFilterRule({
+					fieldPath: [],
+					operatorName: '_eq',
+					operand: { source: 'subquery', subquery: { resourceName: 'pokemon', filter: null, selector: { kind: 'row', fieldPath: [], ordering: null } } },
+				}),
+			},
+		});
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		spectator.click('[data-testid="operand-subquery-field-path"] [data-testid="search-select-trigger"]');
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toContain('Height');
+		expect(labels).not.toContain('height');
+	});
 });

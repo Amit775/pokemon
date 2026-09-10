@@ -2,11 +2,22 @@ import { ChangeDetectionStrategy, Component, DestroyRef, Injector, computed, inj
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
 import { SearchSelectComponent, type SearchSelectOption } from '@pokemon-center/ui-pokedex';
 import { coerceToGraphQLType, type LiteralScalar, type LiteralValue } from '../../core/model/literal-value';
+import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
+import type { OutputFieldDescriptor } from '../../core/metadata/introspection-types';
+import type { ResourceDescriptor } from '../../core/metadata/read-resources';
 import type { FilterOperand } from '../../core/model/query-tree';
-import type { ValueSource } from '../../metadata/query-builder-metadata';
+import { QUERY_BUILDER_METADATA, type ValueSource } from '../../metadata/query-builder-metadata';
+import { resolveFieldLabel, resolveResourceLabel } from '../../metadata/resolve-labels';
+import { discoverResources } from '../../session/http-introspection-fetcher';
 import { createValueSourceSearch, type ValueOption } from '../../session/value-source-search';
 
 const valueSourceSearchDebounceMilliseconds = 200;
+
+const emptyQueryBuilderCatalog: QueryBuilderCatalog = {
+	readBooleanExpressionFields: async () => [],
+	readOperatorsForComparisonType: async () => [],
+	readOutputObjectFields: async () => [],
+};
 
 interface ValueSourceSearchTrigger {
 	readonly source: ValueSource;
@@ -75,22 +86,28 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 
 			@if (operand().source === 'subquery') {
 				<div class="subquery-editor" data-testid="operand-subquery-editor">
-					<input
-						type="text"
-						placeholder="resource"
-						class="subquery-resource-input"
-						data-testid="operand-subquery-resource"
-						[value]="subqueryResourceName()"
-						(input)="setSubqueryResourceName($any($event.target).value)"
-					/>
-					<input
-						type="text"
-						placeholder="field.path"
-						class="subquery-field-path-input"
-						data-testid="operand-subquery-field-path"
-						[value]="subqueryFieldPath()"
-						(input)="setSubqueryFieldPath($any($event.target).value)"
-					/>
+					<div class="subquery-resource-picker" data-testid="operand-subquery-resource">
+						<pokedex-search-select
+							class="subquery-select"
+							[options]="subqueryResourceOptions()"
+							[value]="subqueryResourceName() || null"
+							placeholder="Choose resource"
+							[loading]="subqueryResourceLoading()"
+							[errorMessage]="subqueryResourceError()"
+							(valueChosen)="setSubqueryResourceName($event)"
+							(click)="onSubqueryResourceAreaClicked($event)"
+						/>
+					</div>
+					<div class="subquery-field-path-picker" data-testid="operand-subquery-field-path">
+						<pokedex-search-select
+							class="subquery-select"
+							[options]="subqueryFieldOptions()"
+							[value]="subqueryFieldPath() || null"
+							placeholder="Choose field"
+							[errorMessage]="subqueryFieldError()"
+							(valueChosen)="setSubqueryFieldPath($event)"
+						/>
+					</div>
 					@if (resolvedValue() !== null) {
 						<p class="resolved-value" data-testid="operand-resolved-value">{{ subqueryDescription() }}: {{ resolvedValue() }}</p>
 					}
@@ -130,6 +147,7 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 		}
 		.subquery-editor { display: flex; flex-direction: column; gap: var(--s-1); }
 		.value-select { display: flex; }
+		.subquery-select { display: flex; }
 		.resolved-value { margin: 0; font-size: var(--fs-xs); color: var(--ink-muted); }
 	`,
 })
@@ -139,12 +157,15 @@ export class OperandEditorComponent {
 	readonly argumentTypeName = input<string>('');
 	readonly acceptsList = input<boolean>(false);
 	readonly valueSource = input<ValueSource | null>(null);
+	readonly catalog = input<QueryBuilderCatalog>(emptyQueryBuilderCatalog);
 	readonly operandChange = output<FilterOperand>();
 
 	private readonly injector = inject(Injector);
 	private readonly destroyRef = inject(DestroyRef);
+	private readonly metadata = inject(QUERY_BUILDER_METADATA);
 	private debounceTimeoutId: ReturnType<typeof setTimeout> | null = null;
 	private searchValueSourceOptions: ((source: ValueSource, searchText: string) => Promise<readonly ValueOption[]>) | null = null;
+	private discoverResourcesFunction: (() => Promise<readonly ResourceDescriptor[]>) | null = null;
 
 	protected readonly valueSearchTrigger = signal<ValueSourceSearchTrigger | undefined>(undefined);
 
@@ -160,6 +181,61 @@ export class OperandEditorComponent {
 		}
 		return this.searchValueSourceOptions;
 	}
+
+	private getDiscoverResources(): () => Promise<readonly ResourceDescriptor[]> {
+		if (!this.discoverResourcesFunction) {
+			this.discoverResourcesFunction = () => runInInjectionContext(this.injector, () => discoverResources());
+		}
+		return this.discoverResourcesFunction;
+	}
+
+	protected readonly subqueryResourceRequested = signal(false);
+
+	private readonly resourceListResource = resource({
+		params: () => (this.subqueryResourceRequested() ? {} : undefined),
+		loader: () => this.getDiscoverResources()(),
+		defaultValue: [] as readonly ResourceDescriptor[],
+	});
+
+	protected readonly subqueryResourceOptions = computed<readonly SearchSelectOption[]>(() => {
+		if (this.resourceListResource.error() !== undefined) return [];
+		return this.resourceListResource
+			.value()
+			.map((resourceDescriptor) => ({
+				value: resourceDescriptor.resourceName,
+				label: resolveResourceLabel(this.metadata, resourceDescriptor.resourceName),
+			}))
+			.sort((first, second) => first.label.localeCompare(second.label));
+	});
+
+	protected readonly subqueryResourceLoading = computed(() => this.resourceListResource.isLoading());
+	protected readonly subqueryResourceError = computed(() => {
+		const error = this.resourceListResource.error();
+		if (error === undefined) return null;
+		return error instanceof Error ? error.message : String(error);
+	});
+
+	private readonly subqueryFieldsResource = resource({
+		params: () => {
+			const resourceName = this.subqueryResourceName();
+			return resourceName ? { catalog: this.catalog(), resourceName } : undefined;
+		},
+		loader: ({ params }) => params.catalog.readOutputObjectFields(params.resourceName),
+		defaultValue: [] as readonly OutputFieldDescriptor[],
+	});
+
+	protected readonly subqueryFieldOptions = computed<readonly SearchSelectOption[]>(() => {
+		const resourceName = this.subqueryResourceName();
+		return this.subqueryFieldsResource
+			.value()
+			.map((field) => ({ value: field.fieldName, label: resolveFieldLabel(this.metadata, resourceName, field.fieldName) }));
+	});
+
+	protected readonly subqueryFieldError = computed(() => {
+		const error = this.subqueryFieldsResource.error();
+		if (error === undefined) return null;
+		return error instanceof Error ? error.message : String(error);
+	});
 
 	protected readonly valueOptions = computed<readonly SearchSelectOption[]>(() => {
 		if (this.valueSearchResource.error() !== undefined) return [];
@@ -256,6 +332,12 @@ export class OperandEditorComponent {
 
 	protected chooseValueSourceOption(value: string): void {
 		this.operandChange.emit({ source: 'literal', value });
+	}
+
+	protected onSubqueryResourceAreaClicked(event: MouseEvent): void {
+		const target = event.target;
+		if (!(target instanceof HTMLElement) || !target.closest('[data-testid="search-select-trigger"]')) return;
+		this.subqueryResourceRequested.set(true);
 	}
 
 	protected setSubqueryResourceName(resourceName: string): void {
