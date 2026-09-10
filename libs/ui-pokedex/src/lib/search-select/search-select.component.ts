@@ -94,7 +94,10 @@ let searchSelectInstanceSequence = 0;
 										data-testid="search-select-option"
 										[class.active]="option.value === activeValue()"
 									>
-										{{ option.label }}
+										<span class="option-label">{{ option.label }}</span>
+										@if (option.hint) {
+											<span class="option-hint" data-testid="search-select-option-hint">{{ option.hint }}</span>
+										}
 									</li>
 								}
 							}
@@ -160,6 +163,14 @@ let searchSelectInstanceSequence = 0;
 			color: var(--ink);
 			cursor: pointer;
 		}
+		.option-label {
+			display: block;
+		}
+		.option-hint {
+			display: block;
+			font-size: var(--fs-xs);
+			color: var(--ink-muted);
+		}
 		.option:hover,
 		.option.active {
 			background: var(--surface-sunken);
@@ -209,12 +220,32 @@ export class SearchSelectComponent {
 
 	protected readonly selectedValues = computed(() => {
 		const currentValue = this.value();
-		return currentValue === null ? [] : [currentValue];
+		if (currentValue === null) return [];
+		return this.flattenedOptions().some((option) => option.value === currentValue) ? [currentValue] : [];
+	});
+
+	private readonly rememberedLabels = signal<ReadonlyMap<string, string>>(new Map());
+
+	private readonly rememberSelectedLabel = effect(() => {
+		const currentValue = this.value();
+		if (currentValue === null) return;
+
+		const selectedOption = this.options().find((option) => option.value === currentValue);
+		if (!selectedOption) return;
+
+		const currentlyRemembered = untracked(this.rememberedLabels);
+		if (currentlyRemembered.get(currentValue) === selectedOption.label) return;
+		this.rememberedLabels.set(new Map(currentlyRemembered).set(currentValue, selectedOption.label));
 	});
 
 	protected readonly triggerLabel = computed(() => {
-		const selectedOption = this.options().find((option) => option.value === this.value());
-		return selectedOption ? selectedOption.label : this.placeholder();
+		const currentValue = this.value();
+		if (currentValue === null) return this.placeholder();
+
+		const selectedOption = this.options().find((option) => option.value === currentValue);
+		if (selectedOption) return selectedOption.label;
+
+		return this.rememberedLabels().get(currentValue) ?? this.placeholder();
 	});
 
 	protected readonly groupedOptions = computed<readonly SearchSelectOptionGroup[]>(() => {

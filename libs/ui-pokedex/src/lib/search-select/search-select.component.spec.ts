@@ -28,6 +28,49 @@ describe('SearchSelectComponent', () => {
 		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveText('Choose a resource');
 	});
 
+	it('keeps showing the chosen label after the option list is replaced, as an async picker does on every search', async () => {
+		spectator = createComponent({ props: { options, value: 'move', placeholder: 'Choose value' } });
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveText('Move');
+
+		spectator.setInput('options', [{ value: 'water', label: 'Water' }]);
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveText('Move');
+	});
+
+	it('opens without error when the chosen value is absent from the currently rendered options', () => {
+		spectator = createComponent({ props: { options: [{ value: 'water', label: 'Water' }], value: 'grass', placeholder: 'Choose value' } });
+
+		expect(() => {
+			spectator.click('[data-testid="search-select-trigger"]');
+			spectator.detectChanges();
+		}).not.toThrow();
+
+		expect(spectator.queryAll('[data-testid="search-select-option"]')).toHaveLength(1);
+	});
+
+	it('renders an option hint alongside its label, so same-labelled options can be told apart', () => {
+		spectator = createComponent({
+			props: {
+				options: [
+					{ value: 'pokemon_name', label: 'Name', hint: 'on Pokémon' },
+					{ value: 'species_name', label: 'Name', hint: 'on Species' },
+				],
+				value: null,
+				placeholder: 'Choose',
+			},
+		});
+		spectator.click('[data-testid="search-select-trigger"]');
+		spectator.detectChanges();
+
+		const hints = spectator.queryAll('[data-testid="search-select-option-hint"]').map((hint) => hint.textContent?.trim());
+		expect(hints).toEqual(['on Pokémon', 'on Species']);
+	});
+
 	it('lists every option grouped when opened', () => {
 		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
 		spectator.click('[data-testid="search-select-trigger"]');
