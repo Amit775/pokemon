@@ -27,6 +27,8 @@ const capturedTypeNames = [
 	'machine_bool_exp', 'versiongroup_bool_exp', 'growthrate_bool_exp',
 	'characteristic_bool_exp', 'encounter_bool_exp', 'contesttype_bool_exp',
 	'pokemonevolution_bool_exp', 'pokemonegggroup_bool_exp',
+	'movedamageclass', 'movedamageclass_bool_exp',
+	'berryflavor', 'berryflavor_bool_exp',
 ];
 
 async function fetchType(typeName) {

@@ -12320,5 +12320,649 @@
 				}
 			}
 		]
+	},
+	"movedamageclass": {
+		"name": "movedamageclass",
+		"kind": "OBJECT",
+		"fields": [
+			{
+				"name": "id",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "SCALAR",
+						"name": "Int",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "movedamageclassdescriptions",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movedamageclassdescription",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "movedamageclassdescriptions_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "movedamageclassdescription_aggregate",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "movedamageclassnames",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "movedamageclassname",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "movedamageclassnames_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "movedamageclassname_aggregate",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "moves",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "move",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "moves_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "move_aggregate",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "SCALAR",
+						"name": "String",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "stats",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "stat",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "stats_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "stat_aggregate",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "types",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "type",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "types_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "type_aggregate",
+						"ofType": null
+					}
+				}
+			}
+		]
+	},
+	"movedamageclass_bool_exp": {
+		"name": "movedamageclass_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "movedamageclass_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclass_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "movedamageclass_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movedamageclassdescriptions",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclassdescription_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movedamageclassdescriptions_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclassdescription_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movedamageclassnames",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclassname_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "movedamageclassnames_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "movedamageclassname_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moves",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "move_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "moves_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "move_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "String_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "stats",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "stat_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "stats_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "stat_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "types",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "type_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "types_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "type_aggregate_bool_exp",
+					"ofType": null
+				}
+			}
+		]
+	},
+	"berryflavor": {
+		"name": "berryflavor",
+		"kind": "OBJECT",
+		"fields": [
+			{
+				"name": "NaturesByLikesFlavorId",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "nature",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "NaturesByLikesFlavorId_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "nature_aggregate",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "berryflavormaps",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "berryflavormap",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "berryflavormaps_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "berryflavormap_aggregate",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "berryflavornames",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "berryflavorname",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "berryflavornames_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "berryflavorname_aggregate",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "contest_type_id",
+				"type": {
+					"kind": "SCALAR",
+					"name": "Int",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contesttype",
+				"type": {
+					"kind": "OBJECT",
+					"name": "contesttype",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "SCALAR",
+						"name": "Int",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "SCALAR",
+						"name": "String",
+						"ofType": null
+					}
+				}
+			},
+			{
+				"name": "natures",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "LIST",
+						"name": null,
+						"ofType": {
+							"kind": "NON_NULL",
+							"name": null,
+							"ofType": {
+								"kind": "OBJECT",
+								"name": "nature",
+								"ofType": null
+							}
+						}
+					}
+				}
+			},
+			{
+				"name": "natures_aggregate",
+				"type": {
+					"kind": "NON_NULL",
+					"name": null,
+					"ofType": {
+						"kind": "OBJECT",
+						"name": "nature_aggregate",
+						"ofType": null
+					}
+				}
+			}
+		]
+	},
+	"berryflavor_bool_exp": {
+		"name": "berryflavor_bool_exp",
+		"kind": "INPUT_OBJECT",
+		"inputFields": [
+			{
+				"name": "NaturesByLikesFlavorId",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "NaturesByLikesFlavorId_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_and",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "berryflavor_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "_not",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "berryflavor_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "_or",
+				"type": {
+					"kind": "LIST",
+					"name": null,
+					"ofType": {
+						"kind": "NON_NULL",
+						"name": null,
+						"ofType": {
+							"kind": "INPUT_OBJECT",
+							"name": "berryflavor_bool_exp"
+						}
+					}
+				}
+			},
+			{
+				"name": "berryflavormaps",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "berryflavormap_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "berryflavormaps_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "berryflavormap_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "berryflavornames",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "berryflavorname_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "berryflavornames_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "berryflavorname_aggregate_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contest_type_id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "contesttype",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "contesttype_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "id",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "Int_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "name",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "String_comparison_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "natures",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_bool_exp",
+					"ofType": null
+				}
+			},
+			{
+				"name": "natures_aggregate",
+				"type": {
+					"kind": "INPUT_OBJECT",
+					"name": "nature_aggregate_bool_exp",
+					"ofType": null
+				}
+			}
+		]
 	}
 }
