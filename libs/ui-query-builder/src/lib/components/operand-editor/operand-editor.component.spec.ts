@@ -152,20 +152,21 @@ describe('OperandEditorComponent', () => {
 		expect(latestOperand).toEqual({ source: 'literal', value: null });
 	});
 
-	it('displays the resolved value alongside the subquery description', () => {
+	it('displays the resolved value alongside the subquery description, labelled rather than as raw identifiers', () => {
 		const operand: FilterOperand = {
 			source: 'subquery',
 			subquery: {
-				resourceName: 'Pokemon',
+				resourceName: 'pokemonstat',
 				filter: null,
-				selector: { kind: 'aggregate', functionName: 'avg', fieldPath: ['height'] },
+				selector: { kind: 'aggregate', functionName: 'avg', fieldPath: ['base_stat'] },
 			},
 		};
 		spectator = createComponent({ props: { operand, resolvedValue: 12 } });
 
 		const resolved = spectator.query('[data-testid="operand-resolved-value"]');
 		expect(resolved).toExist();
-		expect(resolved?.textContent).toContain('avg of height on Pokemon');
+		expect(resolved?.textContent).toContain('Avg of Base Stat on Pokemonstat');
+		expect(resolved?.textContent).not.toContain('base_stat');
 		expect(resolved?.textContent).toContain('12');
 	});
 
@@ -320,6 +321,14 @@ describe('OperandEditorComponent', () => {
 			spectator.click('[data-testid="remove-value"]');
 
 			expect(emitted).toEqual([{ source: 'literal', value: null }]);
+		});
+
+		it('humanizes a hyphenated value restored from an earlier session, rather than showing the raw slug on the chip', () => {
+			spectator.setInput('operand', { source: 'literal', value: ['special-attack'] });
+			spectator.detectChanges();
+
+			const chipLabels = spectator.queryAll('[data-testid="value-chip"]').map((chip) => chip.textContent?.replace('×', '').trim());
+			expect(chipLabels).toEqual(['Special Attack']);
 		});
 	});
 

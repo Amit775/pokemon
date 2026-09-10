@@ -2,6 +2,7 @@ export * from './lib/core/model/literal-value';
 export * from './lib/core/model/query-tree';
 export * from './lib/core/dialect/query-builder-dialect';
 export * from './lib/core/dialect/hasura-dialect';
+export * from './lib/core/dialect/operator-labels';
 export * from './lib/core/metadata/introspection-types';
 export * from './lib/core/metadata/read-boolean-expression';
 export * from './lib/core/metadata/read-output-object';

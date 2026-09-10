@@ -169,6 +169,58 @@ describe('FilterRuleComponent shortcut-first field picker', () => {
 		expect(latestRule.fieldPath).toEqual(['height']);
 	});
 
+	it('renders a pinned hyphenated value as separate words, not as a half-humanized slug', async () => {
+		const specialAttackPinnedRule: FilterRule = createFilterRule({
+			fieldPath: ['stat', 'name'],
+			operatorName: '_eq',
+			operand: { source: 'literal', value: 'special-attack' },
+		});
+		spectator = createComponent({ props: { ...baseProps, rule: specialAttackPinnedRule, pinned: true } });
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="pinned-condition"]')).toHaveText('Stat is Special Attack');
+	});
+
+	it('shows a field chosen through the advanced picker on the advanced trigger, labelled', async () => {
+		spectator.click('[data-testid="field-advanced"]');
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const heightOption = spectator
+			.queryAll<HTMLElement>('[data-testid="search-select-option"]')
+			.find((option) => option.textContent?.trim() === 'Height');
+		if (!heightOption) throw new Error('expected a Height option in the advanced picker');
+
+		spectator.click(heightOption);
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="field-advanced"]')?.textContent?.trim()).toBe('Height');
+	});
+
+	it('leaves the advanced trigger reading Advanced while the rule has no field of its own', async () => {
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="field-advanced"]')?.textContent?.trim()).toBe('Advanced');
+	});
+
+	it('renders the operators as human wording, never as the raw schema identifier', async () => {
+		spectator = createComponent({
+			props: { ...baseProps, rule: createFilterRule({ fieldPath: ['name'], operatorName: '_eq' }), comparisonTypeName: 'String_comparison_exp' },
+		});
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const options = spectator.queryAll('[data-testid="operator-option"]').map((option) => option.textContent?.trim());
+		expect(options).toContain('is');
+		expect(options).toContain('contains');
+		expect(options).toContain('is one of');
+		expect(options.filter((label) => label?.startsWith('_'))).toEqual([]);
+		expect(options.filter((label) => label === '')).toEqual([]);
+	});
+
 	it('offers exactly the nine integer operators for an integer field', async () => {
 		spectator = createComponent({
 			props: { ...baseProps, rule: createFilterRule({ fieldPath: ['height'], operatorName: '_eq' }), comparisonTypeName: 'Int_comparison_exp' },
@@ -178,8 +230,9 @@ describe('FilterRuleComponent shortcut-first field picker', () => {
 
 		const options = spectator.queryAll('[data-testid="operator-option"]').map((option) => option.textContent?.trim());
 		expect(options).toHaveLength(9);
-		expect(options).toContain('_gt');
-		expect(options).not.toContain('_ilike');
+		expect(options).toContain('is greater than');
+		expect(options).not.toContain('_gt');
+		expect(options).not.toContain('contains');
 	});
 
 	it('offers the nineteen string operators for a string field', async () => {
@@ -213,7 +266,9 @@ describe('FilterRuleComponent shortcut-first field picker', () => {
 		let latestRule = spectator.component.rule();
 		spectator.output('ruleChange').subscribe((rule) => (latestRule = rule));
 
-		const likeOption = spectator.queryAll<HTMLElement>('[data-testid="operator-option"]').find((option) => option.textContent?.trim() === '_like');
+		const likeOption = spectator
+			.queryAll<HTMLElement>('[data-testid="operator-option"]')
+			.find((option) => option.textContent?.trim() === 'contains, matching case');
 		if (!likeOption) throw new Error('expected a _like operator option');
 		spectator.click(likeOption);
 		spectator.detectChanges();

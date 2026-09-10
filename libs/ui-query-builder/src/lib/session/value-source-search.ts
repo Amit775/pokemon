@@ -3,7 +3,7 @@ import { inject } from '@angular/core';
 import { Kind, OperationTypeNode, print, type ArgumentNode, type VariableDefinitionNode } from 'graphql';
 import { firstValueFrom } from 'rxjs';
 import { enumValueNode, literalValueNode, objectValueNode, variableValueNode } from '../core/compiler/value-nodes';
-import { humanizeName } from '../metadata/humanize-name';
+import { humanizeValue } from '../metadata/humanize-name';
 import { QUERY_BUILDER_ENDPOINT, type ValueSource } from '../metadata/query-builder-metadata';
 
 export interface ValueOption {
@@ -80,7 +80,7 @@ function toValueOption(row: Readonly<Record<string, string | number | null | und
 	const value = row[valueFieldName];
 	if (value === null || value === undefined) return undefined;
 	const stringValue = String(value);
-	return { value: stringValue, label: humanizeName(stringValue.replace(/-/g, '_')) };
+	return { value: stringValue, label: humanizeValue(stringValue) };
 }
 
 export function createValueSourceSearch(): (source: ValueSource, searchText: string) => Promise<readonly ValueOption[]> {

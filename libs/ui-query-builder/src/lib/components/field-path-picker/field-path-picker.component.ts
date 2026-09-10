@@ -174,12 +174,6 @@ export class FieldPathPickerComponent {
 
 	protected readonly currentResourceName = computed(() => resourceNameFromTypeName(this.currentTypeName()));
 
-	protected readonly displayLabel = computed(() => {
-		const override = this.triggerLabel();
-		if (override !== null) return override;
-		return this.path().length > 0 ? this.path().join('.') : 'Choose field';
-	});
-
 	private readonly drillStepsResource = resource({
 		params: () => ({ rootTypeName: this.rootTypeName(), path: this.path() }),
 		loader: ({ params }) => this.resolveDrillSteps(params.rootTypeName, params.path),
@@ -188,6 +182,25 @@ export class FieldPathPickerComponent {
 
 	private readonly synchronizeDrillSteps = effect(() => {
 		this.drillSteps.set(this.drillStepsResource.value());
+	});
+
+	protected readonly chosenPathLabel = computed(() => {
+		const chosenPath = this.path();
+		if (chosenPath.length === 0) return '';
+
+		const resolvedSteps = this.drillStepsResource.value();
+		return chosenPath
+			.map((segment, index) => {
+				const owningTypeName = index === 0 ? this.rootTypeName() : (resolvedSteps[index - 1]?.typeName ?? this.rootTypeName());
+				return resolveFieldLabel(this.metadata, resourceNameFromTypeName(owningTypeName), segment);
+			})
+			.join(' / ');
+	});
+
+	protected readonly displayLabel = computed(() => {
+		const override = this.triggerLabel();
+		if (override !== null) return override;
+		return this.chosenPathLabel() || 'Choose field';
 	});
 
 	private readonly fieldsResource = resource({

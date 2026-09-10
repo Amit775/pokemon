@@ -154,6 +154,27 @@ describe('FieldPathPickerComponent', () => {
 		expect(options).toEqual(['Height (cm)']);
 	});
 
+	it('shows the chosen path on the trigger, labelled rather than as a raw dotted identifier', async () => {
+		spectator = createComponent({
+			props: { catalog, rootTypeName: 'pokemon_bool_exp', path: ['pokemontypes', 'type', 'name'] },
+		});
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const triggerText = spectator.query('[data-testid="field-path-trigger"]')?.textContent?.trim();
+		expect(triggerText).toBe('Types / Type / Name');
+		expect(triggerText).not.toContain('pokemontypes');
+		expect(triggerText).not.toBe('Choose field');
+	});
+
+	it('still reads Choose field when no path has been chosen', async () => {
+		spectator = createComponent({ props: { catalog, rootTypeName: 'pokemon_bool_exp' } });
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(spectator.query('[data-testid="field-path-trigger"]')?.textContent?.trim()).toBe('Choose field');
+	});
+
 	it('uses a custom trigger test id when one is provided', async () => {
 		spectator = createComponent({ props: { catalog, rootTypeName: 'pokemon_bool_exp', triggerTestId: 'field-advanced' } });
 		await spectator.fixture.whenStable();

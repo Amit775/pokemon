@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, input, li
 import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
 import { form, required, schema, type Schema } from '@angular/forms/signals';
 import { SearchSelectComponent, type SearchSelectOption } from '@pokemon-center/ui-pokedex';
+import { resolveOperatorLabel } from '../../core/dialect/operator-labels';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { LiteralScalar } from '../../core/model/literal-value';
 import type { OperatorDescriptor } from '../../core/metadata/read-operators';
 import { type FilterOperand, type FilterRule, type QueryBuilderNode } from '../../core/model/query-tree';
 import { expandShortcut } from '../../metadata/expand-shortcut';
-import { humanizeName } from '../../metadata/humanize-name';
+import { humanizeValue } from '../../metadata/humanize-name';
 import { QUERY_BUILDER_METADATA, type FilterShortcut } from '../../metadata/query-builder-metadata';
 import { resolveFieldLabel } from '../../metadata/resolve-labels';
 import { FieldPathPickerComponent } from '../field-path-picker/field-path-picker.component';
@@ -70,7 +71,7 @@ async function resolvesToScalarLeaf(catalog: QueryBuilderCatalog, rootTypeName: 
 						[rootTypeName]="rootTypeName()"
 						[path]="ruleModel().fieldPath"
 						triggerTestId="field-advanced"
-						triggerLabel="Advanced"
+						[triggerLabel]="advancedTriggerLabel()"
 						(pathChosen)="setFieldPath($event)"
 					/>
 				</div>
@@ -84,7 +85,7 @@ async function resolvesToScalarLeaf(catalog: QueryBuilderCatalog, rootTypeName: 
 				>
 					@for (operator of operators(); track operator.operatorName) {
 						<li [cdkOption]="operator.operatorName" class="operator-option" data-testid="operator-option">
-							{{ operator.operatorName }}
+							{{ operatorLabel(operator.operatorName) }}
 						</li>
 					}
 				</ul>
@@ -112,7 +113,6 @@ async function resolvesToScalarLeaf(catalog: QueryBuilderCatalog, rootTypeName: 
 		.operator-list { display: flex; flex-wrap: wrap; gap: var(--s-1); list-style: none; margin: 0; padding: 0; }
 		.operator-option {
 			font-size: var(--fs-xs);
-			font-family: var(--font-mono);
 			padding: var(--s-1) var(--s-2);
 			border-radius: var(--r-sm);
 			border: 1px solid var(--line);
@@ -164,12 +164,17 @@ export class FilterRuleComponent {
 
 	protected readonly selectedShortcutValue = computed(() => this.selectedShortcut()?.shortcutId ?? null);
 
+	protected readonly advancedTriggerLabel = computed(() => {
+		if (this.selectedShortcut() !== null) return 'Advanced';
+		return this.ruleModel().fieldPath.length > 0 ? null : 'Advanced';
+	});
+
 	protected readonly pinnedLabel = computed(() => {
 		const currentRule = this.ruleModel();
 		const subjectFieldName = currentRule.fieldPath[0] ?? '';
 		const label = resolveFieldLabel(this.metadata, this.resourceName(), subjectFieldName);
 		const value = currentRule.operand.source === 'literal' ? currentRule.operand.value : null;
-		return `${label} is ${humanizeName(String(value ?? ''))}`;
+		return `${label} is ${humanizeValue(String(value ?? ''))}`;
 	});
 
 	private readonly operatorsResource = resource({
@@ -190,6 +195,10 @@ export class FilterRuleComponent {
 
 	constructor() {
 		effect(() => this.ruleChange.emit(this.ruleModel()));
+	}
+
+	protected operatorLabel(operatorName: string): string {
+		return resolveOperatorLabel(operatorName);
 	}
 
 	protected setFieldPath(fieldPath: readonly string[]): void {

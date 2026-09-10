@@ -542,7 +542,7 @@ describe('QueryBuilderComponent composing entirely by choosing', () => {
 
 		await chooseOption(spectator, 'field-select', 'Type');
 
-		const inOperatorOption = spectator.queryAll('[data-testid="operator-option"]').find((candidate) => candidate.textContent?.trim() === '_in');
+		const inOperatorOption = spectator.queryAll('[data-testid="operator-option"]').find((candidate) => candidate.textContent?.trim() === 'is one of');
 		if (!inOperatorOption) throw new Error('expected an _in operator option');
 		spectator.click(inOperatorOption as HTMLElement);
 		await settle(spectator);

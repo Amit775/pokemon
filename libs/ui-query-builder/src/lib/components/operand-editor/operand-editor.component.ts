@@ -6,6 +6,7 @@ import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { OutputFieldDescriptor } from '../../core/metadata/introspection-types';
 import type { ResourceDescriptor } from '../../core/metadata/read-resources';
 import type { FilterOperand } from '../../core/model/query-tree';
+import { humanizeName, humanizeValue } from '../../metadata/humanize-name';
 import { QUERY_BUILDER_METADATA, type ValueSource } from '../../metadata/query-builder-metadata';
 import { resolveFieldLabel, resolveResourceLabel } from '../../metadata/resolve-labels';
 import { discoverResources } from '../../session/http-introspection-fetcher';
@@ -312,9 +313,15 @@ export class OperandEditorComponent {
 	protected readonly subqueryDescription = computed(() => {
 		const operand = this.operand();
 		if (operand.source !== 'subquery') return '';
+
 		const selector = operand.subquery.selector;
-		const fieldPath = selector.fieldPath.join('.');
-		return selector.kind === 'aggregate' ? `${selector.functionName} of ${fieldPath} on ${operand.subquery.resourceName}` : `${fieldPath} on ${operand.subquery.resourceName}`;
+		const resourceName = operand.subquery.resourceName;
+		const resourceLabel = resolveResourceLabel(this.metadata, resourceName);
+		const fieldPathLabel = selector.fieldPath.map((segment) => resolveFieldLabel(this.metadata, resourceName, segment)).join(' / ');
+
+		return selector.kind === 'aggregate'
+			? `${humanizeName(selector.functionName)} of ${fieldPathLabel} on ${resourceLabel}`
+			: `${fieldPathLabel} on ${resourceLabel}`;
 	});
 
 	protected setSource(source: FilterOperand['source']): void {
@@ -389,7 +396,7 @@ export class OperandEditorComponent {
 	}
 
 	protected valueChipLabel(value: string): string {
-		return this.chosenValueLabels().get(value) ?? this.valueOptions().find((option) => option.value === value)?.label ?? value;
+		return this.chosenValueLabels().get(value) ?? this.valueOptions().find((option) => option.value === value)?.label ?? humanizeValue(value);
 	}
 
 	protected onSubqueryResourceAreaClicked(event: MouseEvent): void {
