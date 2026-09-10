@@ -160,4 +160,24 @@ describe('FilterGroupComponent relation scope picker', () => {
 		expect(labels).not.toContain('pokemonstats');
 		expect(spectator.query('[data-testid="relation-scope-input"]')).not.toExist();
 	});
+
+	it('offers a way back to no relation scope, so a mis-click does not scope the group permanently', async () => {
+		const group = createFilterGroup({ relationScope: { fieldPath: ['pokemonstats'], quantifier: 'some' } });
+		spectator = createComponent({ props: { group, catalog: relationScopeCatalog, rootTypeName: 'pokemon_bool_exp' } });
+		const emitted: FilterGroupPatch[] = [];
+		spectator.component.groupPatched.subscribe((patch: FilterGroupPatch) => emitted.push(patch));
+
+		spectator.click('[data-testid="relation-scope-select"] [data-testid="search-select-trigger"]');
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const clearOption = spectator
+			.queryAll<HTMLElement>('[data-testid="search-select-option"]')
+			.find((option) => option.textContent?.trim() === 'No relation scope');
+		if (!clearOption) throw new Error('expected an option that clears the relation scope');
+
+		spectator.click(clearOption);
+
+		expect(emitted).toEqual([{ nodeId: group.nodeId, relationScope: null }]);
+	});
 });

@@ -20,6 +20,8 @@ import { FilterRuleComponent } from '../filter-rule/filter-rule.component';
 
 const boolExpSuffixPattern = /_bool_exp$/;
 
+const clearRelationScopeValue = '__no_relation_scope__';
+
 function resourceNameFromTypeName(typeName: string): string {
 	return typeName.replace(boolExpSuffixPattern, '');
 }
@@ -201,10 +203,11 @@ export class FilterGroupComponent {
 
 	protected readonly relationScopeOptions = computed<readonly SearchSelectOption[]>(() => {
 		const resourceName = resourceNameFromTypeName(this.rootTypeName());
-		return this.rootTypeFieldsResource
+		const relationOptions = this.rootTypeFieldsResource
 			.value()
 			.filter((field): field is CatalogFieldDescriptor & { kind: 'relation' } => field.kind === 'relation' && field.cardinality === 'toMany')
 			.map((field) => ({ value: field.fieldName, label: resolveFieldLabel(this.metadata, resourceName, field.fieldName) }));
+		return [{ value: clearRelationScopeValue, label: 'No relation scope' }, ...relationOptions];
 	});
 
 	constructor() {
@@ -254,6 +257,10 @@ export class FilterGroupComponent {
 	}
 
 	protected setRelationScopeFieldName(fieldName: string): void {
+		if (fieldName === clearRelationScopeValue) {
+			this.setRelationScope(null);
+			return;
+		}
 		const quantifier = this.group().relationScope?.quantifier ?? 'some';
 		this.setRelationScope({ fieldPath: [fieldName], quantifier });
 	}
