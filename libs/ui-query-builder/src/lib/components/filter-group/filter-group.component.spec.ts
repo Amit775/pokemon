@@ -97,6 +97,27 @@ describe('FilterGroupComponent', () => {
 		expect(spectator.query('[data-testid="pinned-condition"]')).not.toExist();
 	});
 
+	it('offers no remove control for a pinned child rule', () => {
+		const group = createFilterGroup({
+			children: [
+				createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' }, pinned: true }),
+			],
+		});
+		spectator = createComponent({ props: { group } });
+
+		expect(spectator.query('[data-testid="pinned-condition"]')).toExist();
+		expect(spectator.query('[data-testid="remove-node"]')).not.toExist();
+	});
+
+	it('offers a remove control for a non-pinned child rule', () => {
+		const group = createFilterGroup({
+			children: [createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' } })],
+		});
+		spectator = createComponent({ props: { group } });
+
+		expect(spectator.query('[data-testid="remove-node"]')).toExist();
+	});
+
 });
 
 describe('FilterGroupComponent relation scope picker', () => {
@@ -104,6 +125,26 @@ describe('FilterGroupComponent relation scope picker', () => {
 	const createComponent = createComponentFactory({
 		component: FilterGroupComponent,
 		providers: [{ provide: QUERY_BUILDER_METADATA, useValue: relationScopeMetadata }],
+	});
+
+	it('reads the root boolean expression fields only once the relation scope picker is opened', async () => {
+		const readBooleanExpressionFields = jest.fn(async () => [] as readonly CatalogFieldDescriptor[]);
+		const countingCatalog: QueryBuilderCatalog = {
+			readBooleanExpressionFields,
+			readOperatorsForComparisonType: async () => [],
+			readOutputObjectFields: async () => [],
+		};
+		const group = createFilterGroup();
+		spectator = createComponent({ props: { group, catalog: countingCatalog, rootTypeName: 'pokemon_bool_exp' } });
+		await spectator.fixture.whenStable();
+
+		expect(readBooleanExpressionFields).not.toHaveBeenCalled();
+
+		spectator.click('[data-testid="relation-scope-select"] [data-testid="search-select-trigger"]');
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(readBooleanExpressionFields).toHaveBeenCalledTimes(1);
 	});
 
 	it('picks the relation scope path instead of typing it', async () => {

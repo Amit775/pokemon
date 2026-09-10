@@ -65,7 +65,7 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 						class="value-select"
 						data-testid="value-select"
 						[options]="valueOptions()"
-						[value]="literalDisplayValue() || null"
+						[value]="selectedValueSourceValue()"
 						placeholder="Choose value"
 						[loading]="valueQueryLoading()"
 						[errorMessage]="valueQueryError()"
@@ -73,6 +73,16 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 						(searchTextChanged)="onValueSearchTextChanged($event, source)"
 						(click)="onValueSelectAreaClicked($event, source)"
 					/>
+					@if (acceptsList()) {
+						<ul class="value-chips" data-testid="value-chip-list">
+							@for (chosenValue of chosenListValues(); track chosenValue) {
+								<li class="value-chip" data-testid="value-chip">
+									{{ valueChipLabel(chosenValue) }}
+									<button type="button" class="remove-value" data-testid="remove-value" (click)="removeListValue(chosenValue)">×</button>
+								</li>
+							}
+						</ul>
+					}
 				} @else {
 					<input
 						type="text"
@@ -106,6 +116,7 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 							placeholder="Choose field"
 							[errorMessage]="subqueryFieldError()"
 							(valueChosen)="setSubqueryFieldPath($event)"
+							(click)="onSubqueryFieldAreaClicked($event)"
 						/>
 					</div>
 					@if (resolvedValue() !== null) {
@@ -147,6 +158,20 @@ function parseRawScalar(rawValue: string, argumentTypeName: string): LiteralScal
 		}
 		.subquery-editor { display: flex; flex-direction: column; gap: var(--s-1); }
 		.value-select { display: flex; }
+		.value-chips { display: flex; flex-wrap: wrap; gap: var(--s-1); list-style: none; margin: 0; padding: 0; }
+		.value-chip {
+			display: inline-flex;
+			align-items: center;
+			gap: var(--s-1);
+			font-size: var(--fs-xs);
+			padding: var(--s-1) var(--s-2);
+			border-radius: var(--r-pill);
+			border: 1px solid var(--line);
+			background: var(--accent-soft);
+			color: var(--accent);
+		}
+		.remove-value { background: none; border: none; color: inherit; cursor: pointer; font-size: var(--fs-sm); line-height: 1; padding: 0; }
+		.remove-value:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 		.subquery-select { display: flex; }
 		.resolved-value { margin: 0; font-size: var(--fs-xs); color: var(--ink-muted); }
 	`,
@@ -168,6 +193,8 @@ export class OperandEditorComponent {
 	private discoverResourcesFunction: (() => Promise<readonly ResourceDescriptor[]>) | null = null;
 
 	protected readonly valueSearchTrigger = signal<ValueSourceSearchTrigger | undefined>(undefined);
+
+	private readonly chosenValueLabels = signal<ReadonlyMap<string, string>>(new Map());
 
 	private readonly valueSearchResource = resource({
 		params: () => this.valueSearchTrigger(),
@@ -215,8 +242,11 @@ export class OperandEditorComponent {
 		return error instanceof Error ? error.message : String(error);
 	});
 
+	protected readonly subqueryFieldsRequested = signal(false);
+
 	private readonly subqueryFieldsResource = resource({
 		params: () => {
+			if (!this.subqueryFieldsRequested()) return undefined;
 			const resourceName = this.subqueryResourceName();
 			return resourceName ? { catalog: this.catalog(), resourceName } : undefined;
 		},
@@ -253,6 +283,15 @@ export class OperandEditorComponent {
 			if (this.debounceTimeoutId !== null) clearTimeout(this.debounceTimeoutId);
 		});
 	}
+
+	protected readonly chosenListValues = computed<readonly string[]>(() => {
+		const operand = this.operand();
+		if (operand.source !== 'literal' || operand.value === null) return [];
+		const values = Array.isArray(operand.value) ? operand.value : [operand.value];
+		return values.filter((entry) => entry !== null).map((entry) => String(entry));
+	});
+
+	protected readonly selectedValueSourceValue = computed(() => (this.acceptsList() ? null : this.literalDisplayValue() || null));
 
 	protected readonly literalDisplayValue = computed(() => {
 		const operand = this.operand();
@@ -331,13 +370,38 @@ export class OperandEditorComponent {
 	}
 
 	protected chooseValueSourceOption(value: string): void {
-		this.operandChange.emit({ source: 'literal', value });
+		const chosenLabel = this.valueOptions().find((option) => option.value === value)?.label;
+		if (chosenLabel !== undefined) this.chosenValueLabels.update((labels) => new Map(labels).set(value, chosenLabel));
+
+		if (!this.acceptsList()) {
+			this.operandChange.emit({ source: 'literal', value });
+			return;
+		}
+
+		const currentValues = this.chosenListValues();
+		if (currentValues.includes(value)) return;
+		this.operandChange.emit({ source: 'literal', value: [...currentValues, value] });
+	}
+
+	protected removeListValue(value: string): void {
+		const remainingValues = this.chosenListValues().filter((entry) => entry !== value);
+		this.operandChange.emit({ source: 'literal', value: remainingValues.length === 0 ? null : remainingValues });
+	}
+
+	protected valueChipLabel(value: string): string {
+		return this.chosenValueLabels().get(value) ?? this.valueOptions().find((option) => option.value === value)?.label ?? value;
 	}
 
 	protected onSubqueryResourceAreaClicked(event: MouseEvent): void {
 		const target = event.target;
 		if (!(target instanceof HTMLElement) || !target.closest('[data-testid="search-select-trigger"]')) return;
 		this.subqueryResourceRequested.set(true);
+	}
+
+	protected onSubqueryFieldAreaClicked(event: MouseEvent): void {
+		const target = event.target;
+		if (!(target instanceof HTMLElement) || !target.closest('[data-testid="search-select-trigger"]')) return;
+		this.subqueryFieldsRequested.set(true);
 	}
 
 	protected setSubqueryResourceName(resourceName: string): void {

@@ -530,6 +530,52 @@ describe('QueryBuilderComponent composing entirely by choosing', () => {
 		);
 	});
 
+	it('compiles a list operand when a list operator is chosen alongside a curated value picker', async () => {
+		spectator = createComponent({ props: { resources: choosingResources, catalog } });
+		httpMock = spectator.inject(HttpTestingController);
+		const store = spectator.inject(QueryBuilderStore, true);
+
+		await chooseOption(spectator, 'resource-select', 'Pokémon');
+
+		spectator.click('[data-testid="add-rule"]');
+		await settle(spectator);
+
+		await chooseOption(spectator, 'field-select', 'Type');
+
+		const inOperatorOption = spectator.queryAll('[data-testid="operator-option"]').find((candidate) => candidate.textContent?.trim() === '_in');
+		if (!inOperatorOption) throw new Error('expected an _in operator option');
+		spectator.click(inOperatorOption as HTMLElement);
+		await settle(spectator);
+
+		spectator.click('[data-testid="value-select"] [data-testid="search-select-trigger"]');
+		httpMock.expectOne('/api/graphql').flush({ data: { type: [{ name: 'grass' }] } });
+		await settle(spectator);
+
+		const grassOption = spectator.queryAll('[data-testid="search-select-option"]').find((candidate) => candidate.textContent?.trim() === 'Grass');
+		if (!grassOption) throw new Error('no option labelled Grass in the value select');
+		spectator.click(grassOption as HTMLElement);
+		await settle(spectator);
+
+		const result = store.compileResult();
+		expect(result.status).toBe('complete');
+		if (result.status !== 'complete') return;
+
+		expect(result.document).toBe(
+			print(
+				parse(`query BuiltQuery {
+					pokemon(
+						where: {_and: [{pokemontypes: {type: {name: {_in: ["grass"]}}}}]}
+						order_by: {id: asc}
+						limit: 50
+					) {
+						id
+						name
+					}
+				}`),
+			),
+		);
+	});
+
 	it('nests a scoped shortcut chosen through the field select on the same related row', async () => {
 		spectator = createComponent({ props: { resources: choosingResources, catalog } });
 		httpMock = spectator.inject(HttpTestingController);

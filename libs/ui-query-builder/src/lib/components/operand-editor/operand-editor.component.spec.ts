@@ -238,6 +238,91 @@ describe('OperandEditorComponent', () => {
 		});
 	});
 
+	describe('with a shortcut-declared value source and a list operator', () => {
+		beforeEach(() => {
+			spectator = createComponent({
+				props: {
+					operand: { source: 'literal', value: null },
+					valueSource: { resourceName: 'type', valueFieldName: 'name' },
+					acceptsList: true,
+				},
+			});
+			httpMock = spectator.inject(HttpTestingController);
+		});
+
+		afterEach(() => {
+			httpMock.verify();
+		});
+
+		it('emits a list operand, not a bare scalar, when a value is chosen', async () => {
+			const emitted: FilterOperand[] = [];
+			spectator.component.operandChange.subscribe((operand: FilterOperand) => emitted.push(operand));
+
+			spectator.click('[data-testid="value-select"] [data-testid="search-select-trigger"]');
+			httpMock.expectOne('/api/graphql').flush({ data: { type: [{ name: 'grass' }, { name: 'fire' }] } });
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			const grassOption = spectator
+				.queryAll<HTMLElement>('[data-testid="search-select-option"]')
+				.find((option) => option.textContent?.trim() === 'Grass');
+			if (!grassOption) throw new Error('expected a Grass option');
+			spectator.click(grassOption);
+
+			expect(emitted).toEqual([{ source: 'literal', value: ['grass'] }]);
+		});
+
+		it('accumulates a second chosen value into the same list and renders both as chips', async () => {
+			const emitted: FilterOperand[] = [];
+			spectator.component.operandChange.subscribe((operand: FilterOperand) => emitted.push(operand));
+
+			spectator.click('[data-testid="value-select"] [data-testid="search-select-trigger"]');
+			httpMock.expectOne('/api/graphql').flush({ data: { type: [{ name: 'grass' }, { name: 'fire' }] } });
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			const grassOption = spectator
+				.queryAll<HTMLElement>('[data-testid="search-select-option"]')
+				.find((option) => option.textContent?.trim() === 'Grass');
+			if (!grassOption) throw new Error('expected a Grass option');
+			spectator.click(grassOption);
+
+			spectator.setInput('operand', { source: 'literal', value: ['grass'] });
+			spectator.detectChanges();
+
+			spectator.click('[data-testid="value-select"] [data-testid="search-select-trigger"]');
+			httpMock.expectOne('/api/graphql').flush({ data: { type: [{ name: 'grass' }, { name: 'fire' }] } });
+			await spectator.fixture.whenStable();
+			spectator.detectChanges();
+
+			const fireOption = spectator
+				.queryAll<HTMLElement>('[data-testid="search-select-option"]')
+				.find((option) => option.textContent?.trim() === 'Fire');
+			if (!fireOption) throw new Error('expected a Fire option');
+			spectator.click(fireOption);
+
+			expect(emitted[emitted.length - 1]).toEqual({ source: 'literal', value: ['grass', 'fire'] });
+
+			spectator.setInput('operand', { source: 'literal', value: ['grass', 'fire'] });
+			spectator.detectChanges();
+
+			const chipLabels = spectator.queryAll('[data-testid="value-chip"]').map((chip) => chip.textContent?.replace('×', '').trim());
+			expect(chipLabels).toEqual(['Grass', 'Fire']);
+		});
+
+		it('removes a chosen value from the list through its chip, emitting null once the list empties', () => {
+			spectator.setInput('operand', { source: 'literal', value: ['grass'] });
+			spectator.detectChanges();
+
+			const emitted: FilterOperand[] = [];
+			spectator.component.operandChange.subscribe((operand: FilterOperand) => emitted.push(operand));
+
+			spectator.click('[data-testid="remove-value"]');
+
+			expect(emitted).toEqual([{ source: 'literal', value: null }]);
+		});
+	});
+
 	it('keeps the plain literal input when no value source is declared', () => {
 		spectator = createComponent({ props: { operand: { source: 'literal', value: null }, argumentTypeName: 'Int' } });
 

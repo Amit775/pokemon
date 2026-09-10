@@ -3,6 +3,7 @@ import { CdkListbox, CdkOption } from '@angular/cdk/listbox';
 import { form, required, schema, type Schema } from '@angular/forms/signals';
 import { SearchSelectComponent, type SearchSelectOption } from '@pokemon-center/ui-pokedex';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
+import type { LiteralScalar } from '../../core/model/literal-value';
 import type { OperatorDescriptor } from '../../core/metadata/read-operators';
 import { type FilterOperand, type FilterRule, type QueryBuilderNode } from '../../core/model/query-tree';
 import { expandShortcut } from '../../metadata/expand-shortcut';
@@ -13,6 +14,18 @@ import { FieldPathPickerComponent } from '../field-path-picker/field-path-picker
 import { OperandEditorComponent } from '../operand-editor/operand-editor.component';
 
 const boolExpSuffixPattern = /_bool_exp$/;
+
+function reshapeOperandForOperator(operand: FilterOperand, acceptsList: boolean): FilterOperand {
+	if (operand.source !== 'literal' || operand.value === null) return operand;
+
+	const isList = Array.isArray(operand.value);
+	if (isList === acceptsList) return operand;
+
+	if (acceptsList) return { source: 'literal', value: [operand.value as LiteralScalar] };
+
+	const [firstValue] = operand.value as readonly LiteralScalar[];
+	return { source: 'literal', value: firstValue ?? null };
+}
 
 const filterRuleSchema: Schema<FilterRule> = schema<FilterRule>((rulePath) => {
 	required(rulePath.operatorName, { message: 'Choose an operator to complete this rule.' });
@@ -184,7 +197,8 @@ export class FilterRuleComponent {
 	}
 
 	protected setOperator(operatorName: string): void {
-		this.ruleModel.update((rule) => ({ ...rule, operatorName }));
+		const acceptsList = this.operators().find((operator) => operator.operatorName === operatorName)?.acceptsList ?? false;
+		this.ruleModel.update((rule) => ({ ...rule, operatorName, operand: reshapeOperandForOperator(rule.operand, acceptsList) }));
 	}
 
 	protected setOperand(operand: FilterOperand): void {

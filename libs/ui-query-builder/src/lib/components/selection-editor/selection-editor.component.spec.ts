@@ -16,6 +16,7 @@ const pokemonOutputFields: readonly OutputFieldDescriptor[] = [
 	{ kind: 'scalar', fieldName: 'name', scalarTypeName: 'String' },
 	{ kind: 'scalar', fieldName: 'height', scalarTypeName: 'Int' },
 	{ kind: 'scalar', fieldName: 'base_experience', scalarTypeName: 'Int' },
+	{ kind: 'relation', fieldName: 'pokemontypes', objectTypeName: 'pokemontype', isList: true },
 ];
 
 const pokemonCatalog: QueryBuilderCatalog = {
@@ -71,6 +72,42 @@ describe('SelectionEditorComponent', () => {
 
 		const latest = emitted[emitted.length - 1];
 		expect(latest.children).toEqual([]);
+	});
+
+	it('offers only leaf-selectable scalar fields, never relation fields', async () => {
+		spectator = createComponent({
+			props: { resourceName: 'pokemon', catalog: pokemonCatalog, selection: { fieldName: '', children: [] } },
+		});
+
+		spectator.click('[data-testid="selection-add"] [data-testid="search-select-trigger"]');
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toContain('Height');
+		expect(labels).not.toContain('Pokemontypes');
+		expect(labels).not.toContain('pokemontypes');
+	});
+
+	it('reads the output fields only once the add-field picker is opened', async () => {
+		const readOutputObjectFields = jest.fn(async () => pokemonOutputFields);
+		const countingCatalog: QueryBuilderCatalog = {
+			readBooleanExpressionFields: async () => [],
+			readOperatorsForComparisonType: async () => [],
+			readOutputObjectFields,
+		};
+		spectator = createComponent({
+			props: { resourceName: 'pokemon', catalog: countingCatalog, selection: { fieldName: '', children: [] } },
+		});
+		await spectator.fixture.whenStable();
+
+		expect(readOutputObjectFields).not.toHaveBeenCalled();
+
+		spectator.click('[data-testid="selection-add"] [data-testid="search-select-trigger"]');
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		expect(readOutputObjectFields).toHaveBeenCalledTimes(1);
 	});
 
 	it('picks selection fields from the output type', async () => {

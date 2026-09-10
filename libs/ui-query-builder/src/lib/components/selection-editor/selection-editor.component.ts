@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, linkedSignal, output, resource, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, linkedSignal, output, resource, signal, untracked } from '@angular/core';
 import { SearchSelectComponent, type SearchSelectOption } from '@pokemon-center/ui-pokedex';
 import type { SelectionNode } from '../../core/compiler/build-selection';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
@@ -28,7 +28,13 @@ const emptyQueryBuilderCatalog: QueryBuilderCatalog = {
 			</ul>
 
 			<div class="selection-add" data-testid="selection-add">
-				<pokedex-search-select [options]="fieldOptions()" [value]="null" placeholder="Add field" (valueChosen)="addField($event)" />
+				<pokedex-search-select
+					[options]="fieldOptions()"
+					[value]="null"
+					placeholder="Add field"
+					(valueChosen)="addField($event)"
+					(click)="onAddFieldAreaClicked($event)"
+				/>
 			</div>
 		</div>
 	`,
@@ -62,14 +68,19 @@ export class SelectionEditorComponent {
 
 	protected readonly selectionModel = linkedSignal(() => this.selection());
 
+	protected readonly fieldOptionsRequested = signal(false);
+
 	private readonly outputFieldsResource = resource({
-		params: () => ({ catalog: this.catalog(), resourceName: this.resourceName() }),
+		params: () => (this.fieldOptionsRequested() ? { catalog: this.catalog(), resourceName: this.resourceName() } : undefined),
 		loader: ({ params }) => params.catalog.readOutputObjectFields(params.resourceName),
 		defaultValue: [] as readonly OutputFieldDescriptor[],
 	});
 
 	protected readonly fieldOptions = computed<readonly SearchSelectOption[]>(() =>
-		this.outputFieldsResource.value().map((field) => ({ value: field.fieldName, label: this.fieldLabel(field.fieldName) })),
+		this.outputFieldsResource
+			.value()
+			.filter((field) => field.kind === 'scalar')
+			.map((field) => ({ value: field.fieldName, label: this.fieldLabel(field.fieldName) })),
 	);
 
 	private lastDefaultedResourceName: string | null = null;
@@ -89,6 +100,12 @@ export class SelectionEditorComponent {
 
 			this.emitSelection({ fieldName: '', children: defaultFieldNames.map((fieldName) => ({ fieldName, children: [] })) });
 		});
+	}
+
+	protected onAddFieldAreaClicked(event: MouseEvent): void {
+		const target = event.target;
+		if (!(target instanceof HTMLElement) || !target.closest('[data-testid="search-select-trigger"]')) return;
+		this.fieldOptionsRequested.set(true);
 	}
 
 	protected fieldLabel(fieldName: string): string {

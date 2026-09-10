@@ -83,6 +83,7 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 						[value]="group().relationScope?.fieldPath?.[0] ?? null"
 						placeholder="Relation scope"
 						(valueChosen)="setRelationScopeFieldName($event)"
+						(click)="onRelationScopeAreaClicked($event)"
 					/>
 				</div>
 
@@ -130,7 +131,9 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 								(shortcutChosen)="shortcutChosen.emit($event)"
 							/>
 						}
-						<button type="button" class="remove-node" data-testid="remove-node" (click)="removeNodeRequested.emit(child.nodeId)">Remove</button>
+						@if (!isPinnedRule(child)) {
+							<button type="button" class="remove-node" data-testid="remove-node" (click)="removeNodeRequested.emit(child.nodeId)">Remove</button>
+						}
 					</li>
 				}
 			</ul>
@@ -188,8 +191,10 @@ export class FilterGroupComponent {
 	protected readonly childTypeName = signal('');
 	protected readonly comparisonTypeNames = signal<ReadonlyMap<string, string>>(new Map());
 
+	protected readonly relationScopeOptionsRequested = signal(false);
+
 	private readonly rootTypeFieldsResource = resource({
-		params: () => ({ catalog: this.catalog(), rootTypeName: this.rootTypeName() }),
+		params: () => (this.relationScopeOptionsRequested() ? { catalog: this.catalog(), rootTypeName: this.rootTypeName() } : undefined),
 		loader: ({ params }) => params.catalog.readBooleanExpressionFields(params.rootTypeName),
 		defaultValue: [] as readonly CatalogFieldDescriptor[],
 	});
@@ -224,6 +229,16 @@ export class FilterGroupComponent {
 		for (const [ruleNodeId, comparisonTypeName] of entries) {
 			this.store?.setComparisonTypeName(ruleNodeId, comparisonTypeName);
 		}
+	}
+
+	protected isPinnedRule(node: QueryBuilderNode): boolean {
+		return isFilterRule(node) && node.pinned === true;
+	}
+
+	protected onRelationScopeAreaClicked(event: MouseEvent): void {
+		const target = event.target;
+		if (!(target instanceof HTMLElement) || !target.closest('[data-testid="search-select-trigger"]')) return;
+		this.relationScopeOptionsRequested.set(true);
 	}
 
 	protected setCombinator(combinator: CombinatorName): void {
