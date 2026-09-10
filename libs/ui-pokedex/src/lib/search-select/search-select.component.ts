@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, effect, input, output, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin } from '@angular/cdk/overlay';
 import { CdkListbox, CdkOption, type ListboxValueChangeEvent } from '@angular/cdk/listbox';
@@ -58,10 +59,6 @@ let searchSelectInstanceSequence = 0;
 							[value]="searchText()"
 							[attr.aria-activedescendant]="activeOptionId()"
 							(input)="onSearchInput($event)"
-							(keydown.escape)="close()"
-							(keydown.arrowdown)="onArrowDown($event)"
-							(keydown.arrowup)="onArrowUp($event)"
-							(keydown.enter)="onEnter($event)"
 						/>
 					}
 					@if (loading()) {
@@ -186,6 +183,9 @@ export class SearchSelectComponent {
 	readonly valueChosen = output<string>();
 	readonly searchTextChanged = output<string>();
 
+	private readonly document = inject(DOCUMENT);
+	private readonly destroyRef = inject(DestroyRef);
+
 	protected readonly panelId = `search-select-panel-${searchSelectInstanceSequence++}`;
 
 	protected readonly isOpen = signal(false);
@@ -236,6 +236,11 @@ export class SearchSelectComponent {
 		}
 	});
 
+	constructor() {
+		this.document.addEventListener('keydown', this.handlePanelKeydown, true);
+		this.destroyRef.onDestroy(() => this.document.removeEventListener('keydown', this.handlePanelKeydown, true));
+	}
+
 	protected optionId(value: string): string {
 		return `${this.panelId}-option-${value}`;
 	}
@@ -260,18 +265,34 @@ export class SearchSelectComponent {
 		this.searchTextChanged.emit(searchText);
 	}
 
-	protected onArrowDown(event: Event): void {
-		event.preventDefault();
-		this.moveActive(1);
-	}
+	private readonly handlePanelKeydown = (event: KeyboardEvent): void => {
+		if (!this.isOpen()) return;
 
-	protected onArrowUp(event: Event): void {
-		event.preventDefault();
-		this.moveActive(-1);
-	}
+		switch (event.key) {
+			case 'Escape':
+				event.preventDefault();
+				event.stopPropagation();
+				this.close();
+				break;
+			case 'ArrowDown':
+				event.preventDefault();
+				event.stopPropagation();
+				this.moveActive(1);
+				break;
+			case 'ArrowUp':
+				event.preventDefault();
+				event.stopPropagation();
+				this.moveActive(-1);
+				break;
+			case 'Enter':
+				event.preventDefault();
+				event.stopPropagation();
+				this.selectActiveOption();
+				break;
+		}
+	};
 
-	protected onEnter(event: Event): void {
-		event.preventDefault();
+	private selectActiveOption(): void {
 		const chosenValue = this.activeValue();
 		if (chosenValue === null) return;
 		this.valueChosen.emit(chosenValue);

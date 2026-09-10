@@ -150,4 +150,65 @@ describe('SearchSelectComponent', () => {
 		expect(spectator.query('[data-testid="search-select-option"]')).not.toExist();
 		expect(chosen).toEqual([]);
 	});
+
+	it('moves the active option by exactly one position per ArrowDown, guarding against a second key manager also acting', () => {
+		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
+
+		spectator.click('[data-testid="search-select-trigger"]');
+		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		spectator.detectChanges();
+
+		const renderedOptions = spectator.queryAll('[data-testid="search-select-option"]');
+		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', renderedOptions[0].id);
+		expect(spectator.query('[data-testid="search-select-trigger"]')).not.toHaveAttribute('aria-activedescendant', renderedOptions[1].id);
+	});
+
+	describe('when searchable is false', () => {
+		it('closes on Escape without choosing anything', () => {
+			spectator = createComponent({ props: { options, value: null, placeholder: 'Choose', searchable: false } });
+			const chosen: string[] = [];
+			spectator.component.valueChosen.subscribe((value: string) => chosen.push(value));
+
+			spectator.click('[data-testid="search-select-trigger"]');
+			expect(spectator.query('[data-testid="search-select-search"]')).not.toExist();
+
+			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'Escape');
+			spectator.detectChanges();
+
+			expect(spectator.query('[data-testid="search-select-option"]')).not.toExist();
+			expect(chosen).toEqual([]);
+		});
+
+		it('chooses the active option when arrowing down then pressing Enter', () => {
+			spectator = createComponent({ props: { options, value: null, placeholder: 'Choose', searchable: false } });
+			const chosen: string[] = [];
+			spectator.component.valueChosen.subscribe((value: string) => chosen.push(value));
+
+			spectator.click('[data-testid="search-select-trigger"]');
+			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'ArrowDown');
+			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'Enter');
+
+			expect(chosen).toEqual(['pokemon']);
+		});
+
+		it('tracks aria-activedescendant as arrows move the active option', () => {
+			spectator = createComponent({ props: { options, value: null, placeholder: 'Choose', searchable: false } });
+
+			spectator.click('[data-testid="search-select-trigger"]');
+			expect(spectator.query('[data-testid="search-select-trigger"]')).not.toHaveAttribute('aria-activedescendant');
+
+			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'ArrowDown');
+			spectator.detectChanges();
+
+			const renderedOptions = spectator.queryAll('[data-testid="search-select-option"]');
+			const firstOptionId = renderedOptions[0].id;
+			expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', firstOptionId);
+
+			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'ArrowDown');
+			spectator.detectChanges();
+
+			const secondOptionId = renderedOptions[1].id;
+			expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', secondOptionId);
+		});
+	});
 });
