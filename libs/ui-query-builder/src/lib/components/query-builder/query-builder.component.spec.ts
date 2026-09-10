@@ -7,6 +7,7 @@ import type { IntrospectionInputObject, IntrospectionOutputObject } from '../../
 import type { ResourceDescriptor } from '../../core/metadata/read-resources';
 import { createFilterGroup, createFilterRule, isFilterGroup, type FilterGroup } from '../../core/model/query-tree';
 import { QUERY_BUILDER_METADATA, type QueryBuilderMetadata } from '../../metadata/query-builder-metadata';
+
 import { QueryBuilderStore } from '../../session/query-builder.store';
 import { QueryBuilderComponent, type CompiledQuery } from './query-builder.component';
 
@@ -39,6 +40,20 @@ function addRuleAndReturnId(store: InstanceType<typeof QueryBuilderStore>, group
 	return group.children[group.children.length - 1].nodeId;
 }
 
+async function openResourceSelect(spectatorInstance: Spectator<QueryBuilderComponent>): Promise<void> {
+	spectatorInstance.click('[data-testid="resource-select"] [data-testid="search-select-trigger"]');
+	await spectatorInstance.fixture.whenStable();
+	spectatorInstance.detectChanges();
+}
+
+function clickResourceOptionByLabel(spectatorInstance: Spectator<QueryBuilderComponent>, label: string): void {
+	const option = spectatorInstance
+		.queryAll('[data-testid="search-select-option"]')
+		.find((element) => element.textContent?.trim() === label);
+	if (!option) throw new Error(`expected an option labelled "${label}"`);
+	spectatorInstance.click(option as HTMLElement);
+}
+
 describe('QueryBuilderComponent', () => {
 	let spectator: Spectator<QueryBuilderComponent>;
 	const createComponent = createComponentFactory({
@@ -46,26 +61,28 @@ describe('QueryBuilderComponent', () => {
 		providers: [{ provide: QUERY_BUILDER_METADATA, useValue: metadata }],
 	});
 
-	it('resets the filter to an empty root group when a resource is chosen', () => {
+	it('resets the filter to an empty root group when a resource is chosen', async () => {
 		spectator = createComponent({ props: { resources, catalog } });
 		const store = spectator.inject(QueryBuilderStore, true);
 		store.addRule(store.filter().nodeId);
 		expect(store.filter().children).toHaveLength(1);
 
-		spectator.click('[data-testid="resource-option"]');
+		await openResourceSelect(spectator);
+		clickResourceOptionByLabel(spectator, 'Pokemon');
 
 		expect(store.filter().children).toEqual([]);
 		expect(store.resourceName()).toBe('pokemon');
 	});
 
-	it('emits the compiled query only when the compile result is complete', () => {
+	it('emits the compiled query only when the compile result is complete', async () => {
 		spectator = createComponent({ props: { resources, catalog } });
 		const emitted: CompiledQuery[] = [];
 		spectator.component.compiled.subscribe((value) => emitted.push(value));
 		spectator.detectChanges();
 		expect(emitted).toHaveLength(0);
 
-		spectator.click('[data-testid="resource-option"]');
+		await openResourceSelect(spectator);
+		clickResourceOptionByLabel(spectator, 'Pokemon');
 		spectator.detectChanges();
 
 		expect(emitted).toHaveLength(1);
@@ -215,5 +232,113 @@ describe('QueryBuilderComponent', () => {
 			}`),
 		);
 		expect(result.document).toBe(expectedDocument);
+	});
+});
+
+describe('QueryBuilderComponent resource picker', () => {
+	let spectator: Spectator<QueryBuilderComponent>;
+	const createComponent = createComponentFactory({ component: QueryBuilderComponent });
+
+	const pickerResources: readonly ResourceDescriptor[] = [
+		{ resourceName: 'move', booleanExpressionTypeName: 'move_bool_exp' },
+		{ resourceName: 'berryflavor', booleanExpressionTypeName: 'berryflavor_bool_exp' },
+		{ resourceName: 'pokemon', booleanExpressionTypeName: 'pokemon_bool_exp' },
+	];
+
+	const pickerMetadata: QueryBuilderMetadata = {
+		resources: [
+			{ resourceName: 'pokemon', displayName: 'Pokémon', group: 'Core', priority: 100, shortcuts: [] },
+			{ resourceName: 'move', displayName: 'Move', group: 'Core', priority: 90, shortcuts: [] },
+		],
+		resourceLabels: { berryflavor: 'Berry Flavor' },
+		fieldLabels: {},
+	};
+
+	it('groups resources and sorts curated ones above the tail', async () => {
+		spectator = createComponent({
+			props: { resources: pickerResources, catalog },
+			providers: [{ provide: QUERY_BUILDER_METADATA, useValue: pickerMetadata }],
+		});
+
+		await openResourceSelect(spectator);
+
+		const groups = spectator.queryAll('[data-testid="search-select-group"]').map((group) => group.textContent?.trim());
+		expect(groups[0]).toBe('Core');
+		expect(groups.at(-1)).toBe('Everything else');
+	});
+
+	it('labels resources from the metadata, never raw', async () => {
+		spectator = createComponent({
+			props: { resources: pickerResources, catalog },
+			providers: [{ provide: QUERY_BUILDER_METADATA, useValue: pickerMetadata }],
+		});
+
+		await openResourceSelect(spectator);
+
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toContain('Pokémon');
+		expect(labels).not.toContain('pokemon');
+	});
+
+	it('labels the uncurated tail resource from the resource label table, never the raw identifier', async () => {
+		spectator = createComponent({
+			props: { resources: pickerResources, catalog },
+			providers: [{ provide: QUERY_BUILDER_METADATA, useValue: pickerMetadata }],
+		});
+
+		await openResourceSelect(spectator);
+
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toContain('Berry Flavor');
+		expect(labels).not.toContain('berryflavor');
+	});
+
+	it('sorts resources within the same group by descending priority, not by input order', async () => {
+		spectator = createComponent({
+			props: { resources: pickerResources, catalog },
+			providers: [{ provide: QUERY_BUILDER_METADATA, useValue: pickerMetadata }],
+		});
+
+		await openResourceSelect(spectator);
+
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toEqual(['Pokémon', 'Move', 'Berry Flavor']);
+	});
+
+	it('breaks a priority tie within the same group by label', async () => {
+		const tieResources: readonly ResourceDescriptor[] = [
+			{ resourceName: 'zebra', booleanExpressionTypeName: 'zebra_bool_exp' },
+			{ resourceName: 'apple', booleanExpressionTypeName: 'apple_bool_exp' },
+		];
+		const tieMetadata: QueryBuilderMetadata = {
+			resources: [
+				{ resourceName: 'zebra', displayName: 'Zebra', group: 'Core', priority: 50, shortcuts: [] },
+				{ resourceName: 'apple', displayName: 'Apple', group: 'Core', priority: 50, shortcuts: [] },
+			],
+			resourceLabels: {},
+			fieldLabels: {},
+		};
+		spectator = createComponent({
+			props: { resources: tieResources, catalog },
+			providers: [{ provide: QUERY_BUILDER_METADATA, useValue: tieMetadata }],
+		});
+
+		await openResourceSelect(spectator);
+
+		const labels = spectator.queryAll('[data-testid="search-select-option"]').map((option) => option.textContent?.trim());
+		expect(labels).toEqual(['Apple', 'Zebra']);
+	});
+
+	it('choosing a resource from the search select selects it on the store', async () => {
+		spectator = createComponent({
+			props: { resources: pickerResources, catalog },
+			providers: [{ provide: QUERY_BUILDER_METADATA, useValue: pickerMetadata }],
+		});
+		const store = spectator.inject(QueryBuilderStore, true);
+
+		await openResourceSelect(spectator);
+		clickResourceOptionByLabel(spectator, 'Berry Flavor');
+
+		expect(store.resourceName()).toBe('berryflavor');
 	});
 });

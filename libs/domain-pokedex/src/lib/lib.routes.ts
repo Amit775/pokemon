@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { provideDataGrid } from '@pokemon-center/ui-pokedex';
-import { QUERY_BUILDER_ENDPOINT } from '@pokemon-center/ui-query-builder';
+import { QUERY_BUILDER_ENDPOINT, QUERY_BUILDER_METADATA } from '@pokemon-center/ui-query-builder';
+import { pokedexQueryBuilderMetadata } from './query-metadata/pokedex-query-builder-metadata';
 
 export const domainPokedexRoutes: Route[] = [
 	{ path: '', redirectTo: 'pokemon', pathMatch: 'full' },
@@ -61,7 +62,11 @@ export const domainPokedexRoutes: Route[] = [
 	},
 	{
 		path: 'query-explorer',
-		providers: [provideDataGrid(), { provide: QUERY_BUILDER_ENDPOINT, useValue: '/api/query-builder/graphql' }],
+		providers: [
+			provideDataGrid(),
+			{ provide: QUERY_BUILDER_ENDPOINT, useValue: '/api/query-builder/graphql' },
+			{ provide: QUERY_BUILDER_METADATA, useValue: pokedexQueryBuilderMetadata },
+		],
 		loadComponent: () => import('./features/query-explorer/query-explorer.component').then((module) => module.QueryExplorerComponent),
 	},
 ];

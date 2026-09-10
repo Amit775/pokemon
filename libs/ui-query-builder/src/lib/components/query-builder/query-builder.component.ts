@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, output } from '@angular/core';
+import { SearchSelectComponent, type SearchSelectOption } from '@pokemon-center/ui-pokedex';
 import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
 import { isFilterGroup, type FilterGroup, type FilterRule, type QueryBuilderNode } from '../../core/model/query-tree';
 import type { ResourceDescriptor } from '../../core/metadata/read-resources';
+import { QUERY_BUILDER_METADATA } from '../../metadata/query-builder-metadata';
+import { resolveResourceLabel } from '../../metadata/resolve-labels';
 import { QueryBuilderStore } from '../../session/query-builder.store';
 import { FilterGroupComponent, type FilterGroupPatch } from '../filter-group/filter-group.component';
 import { QueryPreviewComponent } from '../query-preview/query-preview.component';
@@ -10,6 +13,14 @@ import { SelectionEditorComponent } from '../selection-editor/selection-editor.c
 export interface CompiledQuery {
 	readonly document: string;
 	readonly variables: Record<string, unknown>;
+}
+
+const RESOURCE_GROUP_ORDER = ['Core', 'Classification', 'World', 'Mechanics', 'Everything else'] as const;
+const UNCURATED_RESOURCE_GROUP_NAME = 'Everything else';
+
+function resourceGroupOrderIndex(groupName: string): number {
+	const index = RESOURCE_GROUP_ORDER.indexOf(groupName as (typeof RESOURCE_GROUP_ORDER)[number]);
+	return index === -1 ? RESOURCE_GROUP_ORDER.length : index;
 }
 
 function findNode(root: FilterGroup, nodeId: string): QueryBuilderNode | null {
@@ -28,24 +39,17 @@ function findNode(root: FilterGroup, nodeId: string): QueryBuilderNode | null {
 	selector: 'pokedex-query-builder',
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	providers: [QueryBuilderStore],
-	imports: [FilterGroupComponent, SelectionEditorComponent, QueryPreviewComponent],
+	imports: [FilterGroupComponent, SelectionEditorComponent, QueryPreviewComponent, SearchSelectComponent],
 	template: `
 		<div class="query-builder">
-			<ul class="resource-list" aria-label="Resource">
-				@for (resource of resources(); track resource.resourceName) {
-					<li>
-						<button
-							type="button"
-							class="resource-option"
-							data-testid="resource-option"
-							[attr.aria-pressed]="resource.resourceName === store.resourceName()"
-							(click)="store.selectResource(resource.resourceName)"
-						>
-							{{ resource.resourceName }}
-						</button>
-					</li>
-				}
-			</ul>
+			<div class="resource-picker" data-testid="resource-select">
+				<pokedex-search-select
+					[options]="resourceOptions()"
+					[value]="store.resourceName() || null"
+					placeholder="Choose a resource"
+					(valueChosen)="store.selectResource($event)"
+				/>
+			</div>
 
 			@if (store.resourceName()) {
 				<pokedex-filter-group
@@ -68,18 +72,7 @@ function findNode(root: FilterGroup, nodeId: string): QueryBuilderNode | null {
 	styles: `
 		:host { display: block; }
 		.query-builder { display: flex; flex-direction: column; gap: var(--s-3); }
-		.resource-list { display: flex; flex-wrap: wrap; gap: var(--s-1); list-style: none; margin: 0; padding: 0; }
-		.resource-option {
-			font-size: var(--fs-sm);
-			padding: var(--s-1) var(--s-3);
-			border-radius: var(--r-pill);
-			border: 1px solid var(--line);
-			background: var(--surface);
-			color: var(--ink-muted);
-			cursor: pointer;
-		}
-		.resource-option[aria-pressed='true'] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
-		.resource-option:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+		.resource-picker { display: flex; }
 	`,
 })
 export class QueryBuilderComponent {
@@ -88,10 +81,36 @@ export class QueryBuilderComponent {
 	readonly compiled = output<CompiledQuery>();
 
 	protected readonly store = inject(QueryBuilderStore);
+	private readonly metadata = inject(QUERY_BUILDER_METADATA);
 
 	protected readonly currentTypeName = computed(
 		() => this.resources().find((resource) => resource.resourceName === this.store.resourceName())?.booleanExpressionTypeName ?? '',
 	);
+
+	protected readonly resourceOptions = computed<readonly SearchSelectOption[]>(() => {
+		const metadata = this.metadata;
+
+		return this.resources()
+			.map((resource) => {
+				const curatedResource = metadata.resources.find((entry) => entry.resourceName === resource.resourceName);
+				return {
+					value: resource.resourceName,
+					label: resolveResourceLabel(metadata, resource.resourceName),
+					group: curatedResource?.group ?? UNCURATED_RESOURCE_GROUP_NAME,
+					priority: curatedResource?.priority ?? 0,
+				};
+			})
+			.sort((first, second) => {
+				const groupOrderDifference = resourceGroupOrderIndex(first.group) - resourceGroupOrderIndex(second.group);
+				if (groupOrderDifference !== 0) return groupOrderDifference;
+
+				const priorityDifference = second.priority - first.priority;
+				if (priorityDifference !== 0) return priorityDifference;
+
+				return first.label.localeCompare(second.label);
+			})
+			.map(({ value, label, group }) => ({ value, label, group }));
+	});
 
 	constructor() {
 		effect(() => {
