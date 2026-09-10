@@ -3,7 +3,7 @@ import type { QueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { CatalogFieldDescriptor } from '../../core/metadata/introspection-types';
 import { createFilterGroup, createFilterRule } from '../../core/model/query-tree';
 import { QUERY_BUILDER_METADATA, type QueryBuilderMetadata } from '../../metadata/query-builder-metadata';
-import { FilterGroupComponent } from './filter-group.component';
+import { FilterGroupComponent, type FilterGroupPatch } from './filter-group.component';
 
 const relationScopeCatalog: QueryBuilderCatalog = {
 	readBooleanExpressionFields: async (typeName) =>
@@ -54,26 +54,26 @@ describe('FilterGroupComponent', () => {
 		expect(spectator.queryAll('pokedex-filter-rule')).toHaveLength(1);
 	});
 
-	it('emits a combinator change when the AND/OR toggle is used', () => {
+	it('patches the combinator, naming the group, when the AND/OR toggle is used', () => {
 		const group = createFilterGroup();
 		spectator = createComponent({ props: { group } });
-		const emitted: string[] = [];
-		spectator.component.combinatorChanged.subscribe((value: string) => emitted.push(value));
+		const emitted: FilterGroupPatch[] = [];
+		spectator.component.groupPatched.subscribe((patch: FilterGroupPatch) => emitted.push(patch));
 
 		spectator.click('[data-testid="combinator-or"]');
 
-		expect(emitted).toEqual(['or']);
+		expect(emitted).toEqual([{ nodeId: group.nodeId, combinator: 'or' }]);
 	});
 
-	it('emits a negation change when the NOT toggle is used', () => {
+	it('patches the negation, naming the group, when the NOT toggle is used', () => {
 		const group = createFilterGroup();
 		spectator = createComponent({ props: { group } });
-		const emitted: boolean[] = [];
-		spectator.component.negatedChanged.subscribe((value: boolean) => emitted.push(value));
+		const emitted: FilterGroupPatch[] = [];
+		spectator.component.groupPatched.subscribe((patch: FilterGroupPatch) => emitted.push(patch));
 
 		spectator.click('[data-testid="negate-toggle"]');
 
-		expect(emitted).toEqual([true]);
+		expect(emitted).toEqual([{ nodeId: group.nodeId, negated: true }]);
 	});
 
 	it('renders a pinned child rule as fixed context, not an editable rule', () => {

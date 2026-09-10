@@ -172,8 +172,6 @@ export class FilterGroupComponent {
 	readonly catalog = input<QueryBuilderCatalog>(emptyQueryBuilderCatalog);
 	readonly rootTypeName = input<string>('');
 
-	readonly combinatorChanged = output<CombinatorName>();
-	readonly negatedChanged = output<boolean>();
 	readonly groupPatched = output<FilterGroupPatch>();
 	readonly addRuleRequested = output<string>();
 	readonly addGroupRequested = output<string>();
@@ -229,14 +227,11 @@ export class FilterGroupComponent {
 	}
 
 	protected setCombinator(combinator: CombinatorName): void {
-		this.combinatorChanged.emit(combinator);
 		this.groupPatched.emit({ nodeId: this.group().nodeId, combinator });
 	}
 
 	protected toggleNegated(): void {
-		const negated = !this.group().negated;
-		this.negatedChanged.emit(negated);
-		this.groupPatched.emit({ nodeId: this.group().nodeId, negated });
+		this.groupPatched.emit({ nodeId: this.group().nodeId, negated: !this.group().negated });
 	}
 
 	protected setRelationScope(relationScope: RelationScope | null): void {
