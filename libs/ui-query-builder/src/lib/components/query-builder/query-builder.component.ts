@@ -6,7 +6,7 @@ import type { ResourceDescriptor } from '../../core/metadata/read-resources';
 import { QUERY_BUILDER_METADATA } from '../../metadata/query-builder-metadata';
 import { resolveResourceLabel } from '../../metadata/resolve-labels';
 import { QueryBuilderStore } from '../../session/query-builder.store';
-import { FilterGroupComponent, type FilterGroupPatch } from '../filter-group/filter-group.component';
+import { FilterGroupComponent, type FilterGroupPatch, type FilterShortcutChoice } from '../filter-group/filter-group.component';
 import { QueryPreviewComponent } from '../query-preview/query-preview.component';
 import { SelectionEditorComponent } from '../selection-editor/selection-editor.component';
 
@@ -61,6 +61,7 @@ function findNode(root: FilterGroup, nodeId: string): QueryBuilderNode | null {
 					(addGroupRequested)="store.addGroup($event)"
 					(removeNodeRequested)="store.removeNode($event)"
 					(ruleChanged)="handleRuleChanged($event)"
+					(shortcutChosen)="handleShortcutChosen($event)"
 				/>
 
 				<pokedex-selection-editor [resourceName]="store.resourceName()" [selection]="store.selection()" (selectionChanged)="store.setSelection($event)" />
@@ -131,5 +132,9 @@ export class QueryBuilderComponent {
 		const current = findNode(this.store.filter(), rule.nodeId);
 		if (current !== null && current.kind === 'rule' && JSON.stringify(current) === JSON.stringify(rule)) return;
 		this.store.updateRule(rule.nodeId, rule);
+	}
+
+	protected handleShortcutChosen(choice: FilterShortcutChoice): void {
+		this.store.replaceNode(choice.nodeId, choice.replacement);
 	}
 }

@@ -8,6 +8,7 @@ import {
 	type CombinatorName,
 	type FilterGroup,
 	type FilterRule,
+	type QueryBuilderNode,
 	type RelationQuantifier,
 	type RelationScope,
 } from '../../core/model/query-tree';
@@ -19,6 +20,11 @@ export interface FilterGroupPatch {
 	readonly combinator?: CombinatorName;
 	readonly negated?: boolean;
 	readonly relationScope?: RelationScope | null;
+}
+
+export interface FilterShortcutChoice {
+	readonly nodeId: string;
+	readonly replacement: QueryBuilderNode;
 }
 
 const emptyQueryBuilderCatalog: QueryBuilderCatalog = {
@@ -97,7 +103,9 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 								[rule]="child"
 								[comparisonTypeName]="comparisonTypeNames().get(child.nodeId) ?? ''"
 								[rootTypeName]="childTypeName()"
+								[pinned]="child.pinned ?? false"
 								(ruleChange)="ruleChanged.emit($event)"
+								(shortcutChosen)="shortcutChosen.emit({ nodeId: child.nodeId, replacement: $event })"
 							/>
 						}
 						@if (isFilterGroup(child)) {
@@ -110,6 +118,7 @@ async function resolveComparisonTypeName(catalog: QueryBuilderCatalog, startType
 								(addGroupRequested)="addGroupRequested.emit($event)"
 								(removeNodeRequested)="removeNodeRequested.emit($event)"
 								(ruleChanged)="ruleChanged.emit($event)"
+								(shortcutChosen)="shortcutChosen.emit($event)"
 							/>
 						}
 						<button type="button" class="remove-node" data-testid="remove-node" (click)="removeNodeRequested.emit(child.nodeId)">Remove</button>
@@ -169,6 +178,7 @@ export class FilterGroupComponent {
 	readonly addGroupRequested = output<string>();
 	readonly removeNodeRequested = output<string>();
 	readonly ruleChanged = output<FilterRule>();
+	readonly shortcutChosen = output<FilterShortcutChoice>();
 
 	protected readonly isFilterGroup = isFilterGroup;
 	protected readonly isFilterRule = isFilterRule;

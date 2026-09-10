@@ -53,4 +53,25 @@ describe('FilterGroupComponent', () => {
 
 		expect(emitted).toEqual([true]);
 	});
+
+	it('renders a pinned child rule as fixed context, not an editable rule', () => {
+		const group = createFilterGroup({
+			children: [
+				createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' }, pinned: true }),
+			],
+		});
+		spectator = createComponent({ props: { group } });
+
+		expect(spectator.query('[data-testid="pinned-condition"]')).toExist();
+		expect(spectator.query('[data-testid="operator-option"]')).not.toExist();
+	});
+
+	it('renders a non-pinned child rule as an editable rule, not fixed context', () => {
+		const group = createFilterGroup({
+			children: [createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' } })],
+		});
+		spectator = createComponent({ props: { group } });
+
+		expect(spectator.query('[data-testid="pinned-condition"]')).not.toExist();
+	});
 });

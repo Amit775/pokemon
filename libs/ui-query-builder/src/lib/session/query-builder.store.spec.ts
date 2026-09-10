@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { createFilterGroup, isFilterGroup } from '../core/model/query-tree';
 import { QueryBuilderStore } from './query-builder.store';
 
 describe('QueryBuilderStore', () => {
@@ -70,6 +71,39 @@ describe('QueryBuilderStore', () => {
 		expect(store.resourceName()).toBe('pokemon');
 		expect(store.filter().children).toEqual([]);
 		expect(store.filter().combinator).toBe('and');
+	});
+
+	it('replaces a rule with a group at a nested depth, preserving sibling order', () => {
+		const store = createStore();
+		store.addGroup(store.filter().nodeId);
+		const nestedGroupId = store.filter().children[0].nodeId;
+		store.addRule(nestedGroupId);
+		store.addRule(nestedGroupId);
+		store.addRule(nestedGroupId);
+		const nestedGroup = store.filter().children[0];
+		if (!isFilterGroup(nestedGroup)) throw new Error('expected a group');
+		const [firstRule, targetRule, thirdRule] = nestedGroup.children;
+
+		const replacement = createFilterGroup({ relationScope: { fieldPath: ['pokemonstats'], quantifier: 'some' } });
+		store.replaceNode(targetRule.nodeId, replacement);
+
+		const updatedNestedGroup = store.filter().children[0];
+		if (!isFilterGroup(updatedNestedGroup)) throw new Error('expected a group');
+		expect(updatedNestedGroup.children).toHaveLength(3);
+		expect(updatedNestedGroup.children[0].nodeId).toBe(firstRule.nodeId);
+		expect(updatedNestedGroup.children[1]).toBe(replacement);
+		expect(updatedNestedGroup.children[2].nodeId).toBe(thirdRule.nodeId);
+	});
+
+	it('leaves the tree unchanged when replaceNode is given an unknown nodeId', () => {
+		const store = createStore();
+		store.addRule(store.filter().nodeId);
+		store.addGroup(store.filter().nodeId);
+		const before = store.filter();
+
+		store.replaceNode('does-not-exist', createFilterGroup());
+
+		expect(store.filter()).toBe(before);
 	});
 
 	it('rebuilds only the path to the changed node, leaving untouched branches referentially identical', () => {

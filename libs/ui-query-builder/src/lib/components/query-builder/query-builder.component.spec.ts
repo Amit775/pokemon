@@ -6,7 +6,7 @@ import { createQueryBuilderCatalog } from '../../core/metadata/catalog';
 import type { IntrospectionInputObject, IntrospectionOutputObject } from '../../core/metadata/introspection-types';
 import type { ResourceDescriptor } from '../../core/metadata/read-resources';
 import { createFilterGroup, createFilterRule, isFilterGroup, type FilterGroup } from '../../core/model/query-tree';
-import { QUERY_BUILDER_METADATA, type QueryBuilderMetadata } from '../../metadata/query-builder-metadata';
+import { QUERY_BUILDER_METADATA, type FilterShortcut, type QueryBuilderMetadata } from '../../metadata/query-builder-metadata';
 
 import { QueryBuilderStore } from '../../session/query-builder.store';
 import { QueryBuilderComponent, type CompiledQuery } from './query-builder.component';
@@ -340,5 +340,70 @@ describe('QueryBuilderComponent resource picker', () => {
 		clickResourceOptionByLabel(spectator, 'Berry Flavor');
 
 		expect(store.resourceName()).toBe('berryflavor');
+	});
+});
+
+describe('QueryBuilderComponent choosing a curated shortcut', () => {
+	let spectator: Spectator<QueryBuilderComponent>;
+
+	const baseSpeedShortcut: FilterShortcut = {
+		shortcutId: 'baseSpeed',
+		displayName: 'Base Speed',
+		fieldPath: ['base_stat'],
+		scope: {
+			relationPath: ['pokemonstats'],
+			quantifier: 'some',
+			pinnedRules: [{ fieldPath: ['stat', 'name'], operatorName: '_eq', value: 'speed' }],
+		},
+	};
+
+	const shortcutMetadata: QueryBuilderMetadata = {
+		resources: [{ resourceName: 'pokemon', displayName: 'Pokemon', group: 'Core', priority: 0, shortcuts: [baseSpeedShortcut] }],
+		resourceLabels: {},
+		fieldLabels: {},
+	};
+
+	const createComponent = createComponentFactory({
+		component: QueryBuilderComponent,
+		providers: [{ provide: QUERY_BUILDER_METADATA, useValue: shortcutMetadata }],
+	});
+
+	it('replaces the chosen rule with a relation-scoped group in the tree, preserving sibling order', async () => {
+		spectator = createComponent({ props: { resources, catalog } });
+		const store = spectator.inject(QueryBuilderStore, true);
+		store.selectResource('pokemon');
+
+		const rootNodeId = store.filter().nodeId;
+		const firstRuleId = addRuleAndReturnId(store, rootNodeId);
+		const targetRuleId = addRuleAndReturnId(store, rootNodeId);
+		const thirdRuleId = addRuleAndReturnId(store, rootNodeId);
+		spectator.detectChanges();
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const ruleElements = spectator.queryAll<HTMLElement>('pokedex-filter-rule');
+		const targetRuleElement = ruleElements[1];
+		const targetTrigger = targetRuleElement.querySelector<HTMLElement>('[data-testid="field-select"] [data-testid="search-select-trigger"]');
+		if (!targetTrigger) throw new Error('expected the target rule to render a field-select trigger');
+		spectator.click(targetTrigger);
+		await spectator.fixture.whenStable();
+		spectator.detectChanges();
+
+		const baseSpeedOption = spectator
+			.queryAll('[data-testid="search-select-option"]')
+			.find((option) => option.textContent?.trim() === 'Base Speed');
+		if (!baseSpeedOption) throw new Error('expected a Base Speed option');
+		spectator.click(baseSpeedOption as HTMLElement);
+		spectator.detectChanges();
+
+		const children = store.filter().children;
+		expect(children).toHaveLength(3);
+		expect(children[0].nodeId).toBe(firstRuleId);
+		expect(children[2].nodeId).toBe(thirdRuleId);
+		expect(children[1].nodeId).not.toBe(targetRuleId);
+		expect(isFilterGroup(children[1])).toBe(true);
+		if (!isFilterGroup(children[1])) return;
+		expect(children[1].relationScope).toEqual({ fieldPath: ['pokemonstats'], quantifier: 'some' });
+		expect(children[1].children).toHaveLength(2);
 	});
 });

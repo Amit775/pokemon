@@ -39,7 +39,7 @@ function createInitialState(): QueryBuilderState {
 	};
 }
 
-function replaceNode(root: FilterGroup, nodeId: string, replacer: (node: QueryBuilderNode) => QueryBuilderNode | null): FilterGroup {
+function replaceNodeInTree(root: FilterGroup, nodeId: string, replacer: (node: QueryBuilderNode) => QueryBuilderNode | null): FilterGroup {
 	function visitGroup(group: FilterGroup): FilterGroup {
 		if (group.nodeId === nodeId) {
 			const replaced = replacer(group);
@@ -104,7 +104,7 @@ export const QueryBuilderStore = signalStore(
 		},
 		addRule(parentGroupNodeId: string): void {
 			patchState(store, {
-				filter: replaceNode(store.filter(), parentGroupNodeId, (node) => {
+				filter: replaceNodeInTree(store.filter(), parentGroupNodeId, (node) => {
 					if (!isFilterGroup(node)) {
 						return node;
 					}
@@ -114,7 +114,7 @@ export const QueryBuilderStore = signalStore(
 		},
 		addGroup(parentGroupNodeId: string): void {
 			patchState(store, {
-				filter: replaceNode(store.filter(), parentGroupNodeId, (node) => {
+				filter: replaceNodeInTree(store.filter(), parentGroupNodeId, (node) => {
 					if (!isFilterGroup(node)) {
 						return node;
 					}
@@ -124,7 +124,7 @@ export const QueryBuilderStore = signalStore(
 		},
 		updateRule(ruleNodeId: string, changes: Partial<Omit<FilterRule, 'kind' | 'nodeId'>>): void {
 			patchState(store, {
-				filter: replaceNode(store.filter(), ruleNodeId, (node) => {
+				filter: replaceNodeInTree(store.filter(), ruleNodeId, (node) => {
 					if (node.kind !== 'rule') {
 						return node;
 					}
@@ -133,11 +133,14 @@ export const QueryBuilderStore = signalStore(
 			});
 		},
 		removeNode(nodeId: string): void {
-			patchState(store, { filter: replaceNode(store.filter(), nodeId, () => null) });
+			patchState(store, { filter: replaceNodeInTree(store.filter(), nodeId, () => null) });
+		},
+		replaceNode(nodeId: string, replacement: QueryBuilderNode): void {
+			patchState(store, { filter: replaceNodeInTree(store.filter(), nodeId, () => replacement) });
 		},
 		setCombinator(groupNodeId: string, combinator: FilterGroup['combinator']): void {
 			patchState(store, {
-				filter: replaceNode(store.filter(), groupNodeId, (node) => {
+				filter: replaceNodeInTree(store.filter(), groupNodeId, (node) => {
 					if (!isFilterGroup(node)) {
 						return node;
 					}
@@ -147,7 +150,7 @@ export const QueryBuilderStore = signalStore(
 		},
 		toggleNegated(groupNodeId: string): void {
 			patchState(store, {
-				filter: replaceNode(store.filter(), groupNodeId, (node) => {
+				filter: replaceNodeInTree(store.filter(), groupNodeId, (node) => {
 					if (!isFilterGroup(node)) {
 						return node;
 					}
@@ -157,7 +160,7 @@ export const QueryBuilderStore = signalStore(
 		},
 		setRelationScope(groupNodeId: string, relationScope: RelationScope | null): void {
 			patchState(store, {
-				filter: replaceNode(store.filter(), groupNodeId, (node) => {
+				filter: replaceNodeInTree(store.filter(), groupNodeId, (node) => {
 					if (!isFilterGroup(node)) {
 						return node;
 					}

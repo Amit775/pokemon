@@ -44,6 +44,7 @@ export interface FilterRule {
 	readonly fieldPath: readonly string[];
 	readonly operatorName: string;
 	readonly operand: FilterOperand;
+	readonly pinned?: boolean;
 }
 
 export type QueryBuilderNode = FilterGroup | FilterRule;
@@ -73,6 +74,7 @@ export function createFilterRule(overrides: Partial<Omit<FilterRule, 'kind' | 'n
 		fieldPath: overrides.fieldPath ?? [],
 		operatorName: overrides.operatorName ?? '',
 		operand: overrides.operand ?? { source: 'literal', value: null },
+		...(overrides.pinned !== undefined ? { pinned: overrides.pinned } : {}),
 	};
 }
 

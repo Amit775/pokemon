@@ -12,11 +12,12 @@ export function expandShortcut(shortcut: FilterShortcut): QueryBuilderNode {
 
 	if (!shortcut.scope) return editableRule;
 
-	const pinnedRules = shortcut.scope.pinnedRules.map((pinned) =>
+	const pinnedRules = shortcut.scope.pinnedRules.map((pinnedRule) =>
 		createFilterRule({
-			fieldPath: pinned.fieldPath,
-			operatorName: pinned.operatorName,
-			operand: { source: 'literal', value: pinned.value },
+			fieldPath: pinnedRule.fieldPath,
+			operatorName: pinnedRule.operatorName,
+			operand: { source: 'literal', value: pinnedRule.value },
+			pinned: true,
 		}),
 	);
 

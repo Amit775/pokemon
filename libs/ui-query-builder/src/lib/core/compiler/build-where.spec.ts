@@ -90,6 +90,17 @@ describe('buildWhereValueNode', () => {
 	it('drops an empty group so a blank builder does not emit a broken filter', () => {
 		expect(printWhere(createFilterGroup())).toBe('{}');
 	});
+
+	it('compiles a pinned rule identically to an otherwise-identical unpinned rule', () => {
+		const pinnedGroup = createFilterGroup({
+			children: [createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' }, pinned: true })],
+		});
+		const unpinnedGroup = createFilterGroup({
+			children: [createFilterRule({ fieldPath: ['stat', 'name'], operatorName: '_eq', operand: { source: 'literal', value: 'speed' } })],
+		});
+
+		expect(printWhere(pinnedGroup)).toBe(printWhere(unpinnedGroup));
+	});
 });
 
 describe('orderingValueNode', () => {
