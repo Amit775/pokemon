@@ -7,6 +7,11 @@ const options = [
 	{ value: 'berryflavor', label: 'Berry Flavor', group: 'Everything else' },
 ];
 
+function dispatchKeydownFromElement(spectator: Spectator<SearchSelectComponent>, selector: string, key: string): void {
+	const element = spectator.query(selector) as HTMLElement;
+	spectator.dispatchKeyboardEvent(element, 'keydown', key, element);
+}
+
 describe('SearchSelectComponent', () => {
 	let spectator: Spectator<SearchSelectComponent>;
 	const createComponent = createComponentFactory({ component: SearchSelectComponent });
@@ -97,8 +102,8 @@ describe('SearchSelectComponent', () => {
 		spectator.component.valueChosen.subscribe((value: string) => chosen.push(value));
 
 		spectator.click('[data-testid="search-select-trigger"]');
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'Enter');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'ArrowDown');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'Enter');
 
 		expect(chosen).toEqual(['pokemon']);
 	});
@@ -111,8 +116,8 @@ describe('SearchSelectComponent', () => {
 		spectator.click('[data-testid="search-select-trigger"]');
 		spectator.typeInElement('berry', '[data-testid="search-select-search"]');
 		spectator.detectChanges();
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'Enter');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'ArrowDown');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'Enter');
 
 		expect(chosen).toEqual(['berryflavor']);
 	});
@@ -123,7 +128,7 @@ describe('SearchSelectComponent', () => {
 		spectator.click('[data-testid="search-select-trigger"]');
 		expect(spectator.query('[data-testid="search-select-trigger"]')).not.toHaveAttribute('aria-activedescendant');
 
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'ArrowDown');
 		spectator.detectChanges();
 
 		const renderedOptions = spectator.queryAll('[data-testid="search-select-option"]');
@@ -131,7 +136,7 @@ describe('SearchSelectComponent', () => {
 		expect(firstOptionId).toBeTruthy();
 		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', firstOptionId);
 
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'ArrowDown');
 		spectator.detectChanges();
 
 		const secondOptionId = renderedOptions[1].id;
@@ -144,7 +149,7 @@ describe('SearchSelectComponent', () => {
 		spectator.component.valueChosen.subscribe((value: string) => chosen.push(value));
 
 		spectator.click('[data-testid="search-select-trigger"]');
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'Escape');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'Escape');
 		spectator.detectChanges();
 
 		expect(spectator.query('[data-testid="search-select-option"]')).not.toExist();
@@ -155,12 +160,66 @@ describe('SearchSelectComponent', () => {
 		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
 
 		spectator.click('[data-testid="search-select-trigger"]');
-		spectator.dispatchKeyboardEvent('[data-testid="search-select-search"]', 'keydown', 'ArrowDown');
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'ArrowDown');
 		spectator.detectChanges();
 
 		const renderedOptions = spectator.queryAll('[data-testid="search-select-option"]');
 		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', renderedOptions[0].id);
 		expect(spectator.query('[data-testid="search-select-trigger"]')).not.toHaveAttribute('aria-activedescendant', renderedOptions[1].id);
+	});
+
+	it('attaches the document keydown listener only while the panel is open', () => {
+		const addEventListenerSpy = jest.spyOn(document, 'addEventListener');
+		const removeEventListenerSpy = jest.spyOn(document, 'removeEventListener');
+
+		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
+		expect(addEventListenerSpy).not.toHaveBeenCalledWith('keydown', expect.any(Function), true);
+
+		spectator.click('[data-testid="search-select-trigger"]');
+		expect(addEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function), true);
+
+		dispatchKeydownFromElement(spectator, '[data-testid="search-select-search"]', 'Escape');
+		spectator.detectChanges();
+		expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', expect.any(Function), true);
+
+		addEventListenerSpy.mockRestore();
+		removeEventListenerSpy.mockRestore();
+	});
+
+	it('does not react to keydown events dispatched from outside itself while the panel is closed', () => {
+		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
+
+		const outsideElement = document.createElement('button');
+		document.body.appendChild(outsideElement);
+		const outsideHandler = jest.fn();
+		outsideElement.addEventListener('keydown', outsideHandler);
+
+		outsideElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
+		outsideElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+		spectator.detectChanges();
+
+		expect(outsideHandler).toHaveBeenCalledTimes(2);
+		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-expanded', 'false');
+
+		document.body.removeChild(outsideElement);
+	});
+
+	it('does not consume an Escape dispatched from outside its own panel while open, so an ancestor overlay can still close', () => {
+		spectator = createComponent({ props: { options, value: null, placeholder: 'Choose' } });
+		spectator.click('[data-testid="search-select-trigger"]');
+
+		const outsideElement = document.createElement('button');
+		document.body.appendChild(outsideElement);
+		const outsideHandler = jest.fn();
+		outsideElement.addEventListener('keydown', outsideHandler);
+
+		outsideElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+		spectator.detectChanges();
+
+		expect(outsideHandler).toHaveBeenCalledTimes(1);
+		expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-expanded', 'true');
+
+		document.body.removeChild(outsideElement);
 	});
 
 	describe('when searchable is false', () => {
@@ -172,7 +231,7 @@ describe('SearchSelectComponent', () => {
 			spectator.click('[data-testid="search-select-trigger"]');
 			expect(spectator.query('[data-testid="search-select-search"]')).not.toExist();
 
-			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'Escape');
+			dispatchKeydownFromElement(spectator, '[data-testid="search-select-panel"]', 'Escape');
 			spectator.detectChanges();
 
 			expect(spectator.query('[data-testid="search-select-option"]')).not.toExist();
@@ -185,8 +244,8 @@ describe('SearchSelectComponent', () => {
 			spectator.component.valueChosen.subscribe((value: string) => chosen.push(value));
 
 			spectator.click('[data-testid="search-select-trigger"]');
-			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'ArrowDown');
-			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'Enter');
+			dispatchKeydownFromElement(spectator, '[data-testid="search-select-panel"]', 'ArrowDown');
+			dispatchKeydownFromElement(spectator, '[data-testid="search-select-panel"]', 'Enter');
 
 			expect(chosen).toEqual(['pokemon']);
 		});
@@ -197,14 +256,14 @@ describe('SearchSelectComponent', () => {
 			spectator.click('[data-testid="search-select-trigger"]');
 			expect(spectator.query('[data-testid="search-select-trigger"]')).not.toHaveAttribute('aria-activedescendant');
 
-			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'ArrowDown');
+			dispatchKeydownFromElement(spectator, '[data-testid="search-select-panel"]', 'ArrowDown');
 			spectator.detectChanges();
 
 			const renderedOptions = spectator.queryAll('[data-testid="search-select-option"]');
 			const firstOptionId = renderedOptions[0].id;
 			expect(spectator.query('[data-testid="search-select-trigger"]')).toHaveAttribute('aria-activedescendant', firstOptionId);
 
-			spectator.dispatchKeyboardEvent('[data-testid="search-select-panel"]', 'keydown', 'ArrowDown');
+			dispatchKeydownFromElement(spectator, '[data-testid="search-select-panel"]', 'ArrowDown');
 			spectator.detectChanges();
 
 			const secondOptionId = renderedOptions[1].id;

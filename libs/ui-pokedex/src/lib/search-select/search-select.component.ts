@@ -1,4 +1,17 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
+import {
+	ChangeDetectionStrategy,
+	Component,
+	DestroyRef,
+	ElementRef,
+	computed,
+	effect,
+	inject,
+	input,
+	output,
+	signal,
+	untracked,
+	viewChild,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { CdkConnectedOverlay, CdkOverlayOrigin } from '@angular/cdk/overlay';
@@ -49,7 +62,7 @@ let searchSelectInstanceSequence = 0;
 				(backdropClick)="close()"
 				(detach)="close()"
 			>
-				<div class="panel" [id]="panelId" cdkTrapFocus tabindex="-1" data-testid="search-select-panel">
+				<div #panel class="panel" [id]="panelId" cdkTrapFocus tabindex="-1" data-testid="search-select-panel">
 					@if (searchable()) {
 						<input
 							type="text"
@@ -186,6 +199,8 @@ export class SearchSelectComponent {
 	private readonly document = inject(DOCUMENT);
 	private readonly destroyRef = inject(DestroyRef);
 
+	private readonly panelElement = viewChild<ElementRef<HTMLElement>>('panel');
+
 	protected readonly panelId = `search-select-panel-${searchSelectInstanceSequence++}`;
 
 	protected readonly isOpen = signal(false);
@@ -237,7 +252,6 @@ export class SearchSelectComponent {
 	});
 
 	constructor() {
-		this.document.addEventListener('keydown', this.handlePanelKeydown, true);
 		this.destroyRef.onDestroy(() => this.document.removeEventListener('keydown', this.handlePanelKeydown, true));
 	}
 
@@ -250,6 +264,7 @@ export class SearchSelectComponent {
 			this.close();
 		} else {
 			this.isOpen.set(true);
+			this.document.addEventListener('keydown', this.handlePanelKeydown, true);
 		}
 	}
 
@@ -257,6 +272,7 @@ export class SearchSelectComponent {
 		this.isOpen.set(false);
 		this.searchText.set('');
 		this.activeValue.set(null);
+		this.document.removeEventListener('keydown', this.handlePanelKeydown, true);
 	}
 
 	protected onSearchInput(event: Event): void {
@@ -267,6 +283,9 @@ export class SearchSelectComponent {
 
 	private readonly handlePanelKeydown = (event: KeyboardEvent): void => {
 		if (!this.isOpen()) return;
+
+		const panelNativeElement = this.panelElement()?.nativeElement;
+		if (!panelNativeElement || !(event.target instanceof Node) || !panelNativeElement.contains(event.target)) return;
 
 		switch (event.key) {
 			case 'Escape':
